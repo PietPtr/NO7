@@ -77,6 +77,8 @@ loopTrack = 0
 
 heat = 0
 overheat = False
+collidingEnemies = None
+removed = False #temp
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -132,11 +134,36 @@ while True:
         windowSurface.blit(playerStretchedImage, (playerX, 770))
     windowSurface.blit(playerStretchedImage, (playerX, 770))
 
+    # -------- Enemies --------
+    """Keep list filled with enemies and check for overlapping enemies"""
+    if len(enemyList) != 3:
+        randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
+        randomY = random.randint(-700, -200)
+        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)))
+        for enemy in enemyList:
+            if enemy.name == loopTrack:
+                continue
+            elif enemy.rect.colliderect(pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)):
+                print True
+                removed = True
+                enemyList.remove(enemy)
+
+    """For loop with objects in EnemyList"""
+    for enemy in enemyList:
+        if enemy.health <= 0:
+            enemyList.remove(enemy)
+        if enemy.position[1] > 1000:
+            enemyList.remove(enemy)
+        enemy.position[1] = enemy.position[1] + distance(0.1, frameTime)
+        enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
+        enemy.render()
+        enemy.renderHealth()
+
     # -------- Shooting Conditions and Overheating -------- 
     if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
         if overheat == False:
-            laserList.append(GameObject([int(playerX), 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
-            laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
+            laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
+            laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
             lastShotTime = pygame.time.get_ticks()
             heat = heat + 5
     if pygame.time.get_ticks() - lastShotTime >= 10:
@@ -175,22 +202,6 @@ while True:
                 laserList.remove(laser)
         except:
             print ""
-
-    # -------- Enemies --------
-    """Keep list filled with enemies and check for overlapping enemies"""
-    if len(enemyList) != 3:
-        randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
-        enemyList.append(Enemy(loopTrack, 100, [randomX, -200], enemyStretchedImage, pygame.Rect(randomX, -135, 21 * 5, 27 * 2)))
-
-
-    """For loop with objects in EnemyList"""
-    for enemy in enemyList:
-        if enemy.health <= 0:
-            enemyList.remove(enemy)
-        enemy.position[1] = enemy.position[1] + distance(0.1, frameTime)
-        enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 2) #while loop
-        enemy.render()
-        enemy.renderHealth()
         
     # -------- Debug text -------- 
     if showDebug == True:
