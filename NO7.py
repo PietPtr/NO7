@@ -60,13 +60,13 @@ WINDOWHEIGHT = 900
 PLAYERWIDTH = 21
 PLAYERHEIGHT = 27
 
-SHOOTDELAY = 50
+SHOOTDELAY = 100
 BULLETSPEED = 1.7
 
 """Other variables"""
 playerX = WINDOWWIDTH / 2
 
-windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32) #always 0 and 32
+windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0)
 
 laserList = []
 enemyList = []
@@ -96,6 +96,9 @@ laserStretchedImage = pygame.transform.scale(laserImage, (1 * 4, 3 * 4))
 
 enemyImage = pygame.image.load('Enemy_Ship.png')
 enemyStretchedImage = pygame.transform.scale(enemyImage, (21 * 5, 27 * 5))
+
+heatSurface = pygame.Surface((600, 900))
+heatSurface.fill((255, 0, 0))
 
 # -------------- Game Loop -------------- 
 
@@ -135,21 +138,25 @@ while True:
             laserList.append(GameObject([int(playerX), 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
             laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
             lastShotTime = pygame.time.get_ticks()
-            heat = heat + 10
+            heat = heat + 5
     if pygame.time.get_ticks() - lastShotTime >= 10:
         heat = heat - 0.1
 
     if heat <= 0:
         heat = 0
-        #overheat = False                       #< Cheat mode!
+        overheat = False                       #< Cheat mode!
     elif heat > 100:
         heat = 100
-        #overheat = True                        #< Cheat mode!
+        overheat = True                        #< Cheat mode!
 
     if overheat == False:
         pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
     elif overheat == True:
         pygame.draw.rect(windowSurface, (255, 0, 0), (playerX, 880, heat * 0.84, 10))
+
+    if True:
+        heatSurface.set_alpha(heat * 2 - 100)
+        windowSurface.blit(heatSurface, (0, 0))
 
     # -------- Laser (Rendering & Collision) -------- 
     for laser in laserList:
@@ -174,18 +181,14 @@ while True:
     if len(enemyList) != 3:
         randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
         enemyList.append(Enemy(loopTrack, 100, [randomX, -200], enemyStretchedImage, pygame.Rect(randomX, -135, 21 * 5, 27 * 2)))
-        for enemy in enemyList:
-            print enemy.name
-            if enemy.name != loopTrack:
-                if enemy.rect.colliderect(pygame.Rect(randomX, -135, 21 * 5, 27 * 2)) == True:
-                    enemyList.remove(enemy)
+
 
     """For loop with objects in EnemyList"""
     for enemy in enemyList:
         if enemy.health <= 0:
             enemyList.remove(enemy)
         enemy.position[1] = enemy.position[1] + distance(0.1, frameTime)
-        enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 2)
+        enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 2) #while loop
         enemy.render()
         enemy.renderHealth()
         
