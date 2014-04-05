@@ -78,7 +78,7 @@ loopTrack = 0
 heat = 0
 overheat = False
 collidingEnemies = None
-removed = False #temp
+lives = 3
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -98,6 +98,9 @@ laserStretchedImage = pygame.transform.scale(laserImage, (1 * 4, 3 * 4))
 
 enemyImage = pygame.image.load('Enemy_Ship.png')
 enemyStretchedImage = pygame.transform.scale(enemyImage, (21 * 5, 27 * 5))
+
+lifeImage = pygame.image.load('life.png')
+lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
 
 heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
@@ -120,6 +123,10 @@ while True:
     
     background1.render()
     background2.render()
+
+    # -------- Render Lives --------
+    for i in range(0, lives + 1):
+        windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
 
     # -------- Movement -------- 
     mouseX = pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2
@@ -152,8 +159,9 @@ while True:
     for enemy in enemyList:
         if enemy.health <= 0:
             enemyList.remove(enemy)
-        if enemy.position[1] > 1000:
+        if enemy.position[1] > 910:
             enemyList.remove(enemy)
+            lives = lives - 1
         enemy.position[1] = enemy.position[1] + distance(0.1, frameTime)
         enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
         enemy.render()
@@ -204,10 +212,12 @@ while True:
                 laserList.remove(laser)
         except:
             print ""
-        
+
+
+
     # -------- Debug text -------- 
     if showDebug == True:
-        debug = int(heat), overheat
+        debug = lives
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
         windowSurface.blit(debugText, (1, 1))
 
