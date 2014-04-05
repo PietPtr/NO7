@@ -138,7 +138,7 @@ while True:
     """Keep list filled with enemies and check for overlapping enemies"""
     if len(enemyList) != 3:
         randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
-        randomY = random.randint(-700, -200)
+        randomY = random.randint(-700, -300)
         enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)))
         for enemy in enemyList:
             if enemy.name == loopTrack:
@@ -195,6 +195,8 @@ while True:
                     laserList.remove(laser)
                 except ValueError:
                     print "laser not in list"
+            elif laser.collision(enemy.rect) == False:
+                hasHit = False
         try:
             laser.render()
             laser.position[1] = laser.position[1] - int(distance(1.7, frameTime))
