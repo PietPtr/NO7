@@ -60,8 +60,8 @@ WINDOWHEIGHT = 900
 PLAYERWIDTH = 21
 PLAYERHEIGHT = 27
 
-SHOOTDELAY = 0
-BULLETSPEED = 2
+SHOOTDELAY = 100
+BULLETSPEED = 1.7
 
 """Other variables"""
 playerX = WINDOWWIDTH / 2
@@ -75,10 +75,10 @@ lastShotTime = pygame.time.get_ticks()
 
 loopTrack = 0
 
-heat = -100000
+heat = 0
 overheat = False
 collidingEnemies = None
-lives = 10
+lives = 3
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -173,16 +173,16 @@ while True:
             laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
             laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
             lastShotTime = pygame.time.get_ticks()
-            heat = heat + 1
+            heat = heat + 5
     if pygame.time.get_ticks() - lastShotTime >= 10:
         heat = heat - 0.1
 
     if heat <= 0:
         heat = 0
-        #overheat = False                       #< Cheat mode!
+        overheat = False                       #< Cheat mode!
     elif heat > 100:
         heat = 100
-        #overheat = True                        #< Cheat mode!
+        overheat = True                        #< Cheat mode!
 
     if overheat == False:
         pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
@@ -208,7 +208,7 @@ while True:
         try:
             laser.render()
             laser.position[1] = laser.position[1] - int(distance(1.7, frameTime))
-            if laser.position[1] < -100:
+            if laser.position[1] < -200:
                 laserList.remove(laser)
         except:
             print ""
