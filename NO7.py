@@ -83,6 +83,7 @@ heat = 0
 overheat = False
 collidingEnemies = None
 lives = 3
+difficulty = 15
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -110,7 +111,6 @@ heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
 # -------------- Game Loop -------------- 
-
 while True:
     # -------- Update loop specific variables --------
     loopTrack = loopTrack + 1
@@ -151,7 +151,7 @@ while True:
         lastSpawn = pygame.time.get_ticks()
         randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
         randomY = random.randint(-700, -300)
-        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
+        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / difficulty))
         for enemy in enemyList:
             if enemy.name == loopTrack:
                 continue
@@ -163,6 +163,7 @@ while True:
     for enemy in enemyList:
         if enemy.health <= 0:
             enemyList.remove(enemy)
+            difficulty = difficulty / 1.01
         if enemy.position[1] > 910:
             enemyList.remove(enemy)
             lives = lives - 1
@@ -183,10 +184,10 @@ while True:
 
     if heat <= 0:
         heat = 0
-        overheat = False                       #< Cheat mode!
+        #overheat = False                       #< Cheat mode!
     elif heat > 100:
         heat = 100
-        overheat = True                        #< Cheat mode!
+        #overheat = True                        #< Cheat mode!
 
     if overheat == False:
         pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
@@ -217,12 +218,10 @@ while True:
         except:
             pass
 
-
-
     # -------- Debug text -------- 
     if showDebug == True:
         try:
-            debug = lives
+            debug = difficulty, enemyList[1].position[1]
         except:
             debug = "Loading"
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
