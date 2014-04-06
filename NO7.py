@@ -1,5 +1,7 @@
+from __future__ import division
 import pygame, sys, time, random, os, pickle
 from pygame.locals import *
+
 
 # -------------- Functions and Classes -------------- 
 
@@ -21,12 +23,13 @@ class GameObject(object):
             return False
 
 class Enemy(GameObject):
-    def __init__(self, name, health, position, image, rect):
+    def __init__(self, name, health, position, image, rect, speed):
         self.name = name
         self.position = position
         self.image = image
         self.health = health
         self.rect = rect
+        self.speed = speed
         super(Enemy, self).__init__(self.position, self.image, self.rect)
     def renderHealth(self):
         try:
@@ -72,6 +75,7 @@ laserList = []
 enemyList = []
 
 lastShotTime = pygame.time.get_ticks()
+lastSpawn = pygame.time.get_ticks()
 
 loopTrack = 0
 
@@ -143,15 +147,15 @@ while True:
 
     # -------- Enemies --------
     """Keep list filled with enemies and check for overlapping enemies"""
-    if len(enemyList) != 3:
+    if currentTime - lastSpawn >= 1000:
+        lastSpawn = pygame.time.get_ticks()
         randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
         randomY = random.randint(-700, -300)
-        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)))
+        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
         for enemy in enemyList:
             if enemy.name == loopTrack:
                 continue
             elif enemy.rect.colliderect(pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)):
-                print True
                 removed = True
                 enemyList.remove(enemy)
 
@@ -162,7 +166,7 @@ while True:
         if enemy.position[1] > 910:
             enemyList.remove(enemy)
             lives = lives - 1
-        enemy.position[1] = enemy.position[1] + distance(0.1, frameTime)
+        enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
         enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
         enemy.render()
         enemy.renderHealth()
@@ -198,26 +202,29 @@ while True:
         laser.rect = pygame.Rect(laser.position[0], laser.position[1], 4, 3 * 4)
         for enemy in enemyList:
             if laser.collision(enemy.rect) == True:
-                enemy.health = enemy.health - 5
+                enemy.health = enemy.health - 10
                 try:
                     laserList.remove(laser)
                 except ValueError:
-                    print "laser not in list"
+                    pass
             elif laser.collision(enemy.rect) == False:
                 hasHit = False
         try:
             laser.render()
             laser.position[1] = laser.position[1] - int(distance(1.7, frameTime))
-            if laser.position[1] < -200:
+            if laser.position[1] < -10:
                 laserList.remove(laser)
         except:
-            print ""
+            pass
 
 
 
     # -------- Debug text -------- 
     if showDebug == True:
-        debug = lives
+        try:
+            debug = lives
+        except:
+            debug = "Loading"
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
         windowSurface.blit(debugText, (1, 1))
 
