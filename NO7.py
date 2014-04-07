@@ -127,16 +127,18 @@ heatSurface.fill((255, 0, 0))
 
 # -------------- Game Loop -------------- 
 while True:
+    # -------- Run first outside Gamestate system --------
+    """Update loop specific variables"""
+    loopTrack = loopTrack + 1
+    frameTime = mainClock.tick(1000)
+    currentTime = pygame.time.get_ticks()
+    mousePosition = pygame.mouse.get_pos()
+    
+    """Background"""
+    backgroundScrolling()
+
+    # -------- Game state specific --------
     if GameState == GAMEPLAY:
-        # -------- Update loop specific variables --------
-        loopTrack = loopTrack + 1
-        frameTime = mainClock.tick(1000)
-        currentTime = pygame.time.get_ticks()
-        mousePosition = pygame.mouse.get_pos()
-
-        # -------- Background --------
-        backgroundScrolling()
-
         # -------- Render Lives --------
         for i in range(0, lives + 1):
             windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
@@ -179,7 +181,7 @@ while True:
                 enemyList.remove(enemy)
                 lives = lives - 1
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
-            enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
+            enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
             enemy.render()
             enemy.renderHealth()
 
@@ -239,6 +241,11 @@ while True:
             debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
             windowSurface.blit(debugText, (1, 1))
 
+        # -------- Check Death --------
+        if lives <= 0:
+            lives = 0
+            GameState = GAMEOVER
+
         # -------- Debugging --------
         """
         for laser in laserList:
@@ -246,8 +253,20 @@ while True:
         for enemy in enemyList:
             pygame.draw.rect(windowSurface, GREEN, enemy.rect)
         """
-    # -------- Events -------- 
+
+    # -------- Run if the player has <0 lives left --------
+    elif GameState == GAMEOVER:
+        for enemy in enemyList:
+            enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
+            enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
+            enemy.render()
+            enemy.renderHealth()
+
+    # -------- Run last outside GameState system --------
+    """Update display"""
     pygame.display.update()
+
+    """Events"""
     for event in pygame.event.get():
         if event.type == KEYUP:
             if event.key == 284:
