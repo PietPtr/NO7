@@ -2,7 +2,6 @@ from __future__ import division
 import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
-
 # -------------- Functions and Classes -------------- 
 
 def distance(speed, time):
@@ -36,6 +35,17 @@ class Enemy(GameObject):
             pygame.draw.rect(windowSurface, ((100 - self.health) * 2.55, self.health * 2.55, 0), (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
         except TypeError:
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
+
+def backgroundScrolling():
+    background1.position[1] = background1.position[1] + distance(1, frameTime)
+    background2.position[1] = background2.position[1] + distance(1, frameTime)
+    if background1.position[1] > 900:
+        background1.position[1] = 0
+        background2.position[1] = -900
+    
+    background1.render()
+    background2.render()
+
 
 #-------------- Constants and Variables --------------
 
@@ -119,14 +129,7 @@ while True:
     mousePosition = pygame.mouse.get_pos()
 
     # -------- Background --------
-    background1.position[1] = background1.position[1] + distance(1, frameTime)
-    background2.position[1] = background2.position[1] + distance(1, frameTime)
-    if background1.position[1] > 900:
-        background1.position[1] = 0
-        background2.position[1] = -900
-    
-    background1.render()
-    background2.render()
+    backgroundScrolling()
 
     # -------- Render Lives --------
     for i in range(0, lives + 1):
@@ -147,11 +150,13 @@ while True:
 
     # -------- Enemies --------
     """Keep list filled with enemies and check for overlapping enemies"""
-    if currentTime - lastSpawn >= 1000:
+    if difficulty < 7:
+        difficulty = 7
+    if currentTime - lastSpawn >= 100 * difficulty:
         lastSpawn = pygame.time.get_ticks()
         randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
         randomY = random.randint(-700, -300)
-        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / difficulty))
+        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
         for enemy in enemyList:
             if enemy.name == loopTrack:
                 continue
@@ -184,10 +189,10 @@ while True:
 
     if heat <= 0:
         heat = 0
-        overheat = False                       #< Cheat mode!
+        #overheat = False                       #< Cheat mode!
     elif heat > 100:
         heat = 100
-        overheat = True                        #< Cheat mode!
+        #overheat = True                        #< Cheat mode!
 
     if overheat == False:
         pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
@@ -204,6 +209,7 @@ while True:
         for enemy in enemyList:
             if laser.collision(enemy.rect) == True:
                 enemy.health = enemy.health - 10
+                enemy.speed = enemy.speed / 1.05
                 try:
                     laserList.remove(laser)
                 except ValueError:
@@ -221,7 +227,7 @@ while True:
     # -------- Debug text -------- 
     if showDebug == True:
         try:
-            debug = difficulty, enemyList[1].position[1]
+            debug = enemyList[0].speed
         except:
             debug = "Loading"
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
