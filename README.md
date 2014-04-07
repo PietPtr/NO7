@@ -12,3 +12,9 @@ Download and install pygame 1.9.1 32bit (Download link: http://pygame.org/ftp/py
 Download the .zip file containing the images and the program here: https://www.copy.com/s/6vorxHaJSEmuacua/NO7.zip
 
 Double click the .py file to play!
+
+===
+
+--WARNING--
+
+The code in the .zip file may be outdated, download the program from github to get the latest version
