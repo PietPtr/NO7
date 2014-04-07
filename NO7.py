@@ -99,6 +99,11 @@ backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
 background2 = GameObject([0, -900], backgroundImg, None)
 
+""""Game States"""
+GAMEPLAY = 1
+GAMEOVER = 2
+GameState = GAMEPLAY
+
 # -------------- Image and Music Loading --------------
 
 playerImage = pygame.image.load('Player_ship.png')
@@ -122,124 +127,125 @@ heatSurface.fill((255, 0, 0))
 
 # -------------- Game Loop -------------- 
 while True:
-    # -------- Update loop specific variables --------
-    loopTrack = loopTrack + 1
-    frameTime = mainClock.tick(1000)
-    currentTime = pygame.time.get_ticks()
-    mousePosition = pygame.mouse.get_pos()
+    if GameState == GAMEPLAY:
+        # -------- Update loop specific variables --------
+        loopTrack = loopTrack + 1
+        frameTime = mainClock.tick(1000)
+        currentTime = pygame.time.get_ticks()
+        mousePosition = pygame.mouse.get_pos()
 
-    # -------- Background --------
-    backgroundScrolling()
+        # -------- Background --------
+        backgroundScrolling()
 
-    # -------- Render Lives --------
-    for i in range(0, lives + 1):
-        windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
+        # -------- Render Lives --------
+        for i in range(0, lives + 1):
+            windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
 
-    # -------- Movement -------- 
-    mouseX = pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2
-    if playerX != pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2:
-        if int(playerX) > int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
-            playerX = playerX - distance(1, frameTime)
-            #windowSurface.blit(playerStretchedImageLeft, (playerX, 770))
-        elif int(playerX) < int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
-            playerX = playerX + distance(1, frameTime)
-            #windowSurface.blit(playerStretchedImageRight, (playerX, 770))
-    else:
+        # -------- Movement -------- 
+        mouseX = pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2
+        if playerX != pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2:
+            if int(playerX) > int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
+                playerX = playerX - distance(1, frameTime)
+                #windowSurface.blit(playerStretchedImageLeft, (playerX, 770))
+            elif int(playerX) < int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
+                playerX = playerX + distance(1, frameTime)
+                #windowSurface.blit(playerStretchedImageRight, (playerX, 770))
+        else:
+            windowSurface.blit(playerStretchedImage, (playerX, 770))
         windowSurface.blit(playerStretchedImage, (playerX, 770))
-    windowSurface.blit(playerStretchedImage, (playerX, 770))
 
-    # -------- Enemies --------
-    """Keep list filled with enemies and check for overlapping enemies"""
-    if difficulty < 7:
-        difficulty = 7
-    if currentTime - lastSpawn >= 100 * difficulty:
-        lastSpawn = pygame.time.get_ticks()
-        randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
-        randomY = random.randint(-700, -300)
-        enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
+        # -------- Enemies --------
+        """Keep list filled with enemies and check for overlapping enemies"""
+        if difficulty < 7:
+            difficulty = 7
+        if currentTime - lastSpawn >= 100 * difficulty:
+            lastSpawn = pygame.time.get_ticks()
+            randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
+            randomY = random.randint(-700, -300)
+            enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
+            for enemy in enemyList:
+                if enemy.name == loopTrack:
+                    continue
+                elif enemy.rect.colliderect(pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)):
+                    removed = True
+                    enemyList.remove(enemy)
+
+        """For loop with objects in EnemyList"""
         for enemy in enemyList:
-            if enemy.name == loopTrack:
-                continue
-            elif enemy.rect.colliderect(pygame.Rect(randomX, randomY, 21 * 5, 27 * 5)):
-                removed = True
+            if enemy.health <= 0:
                 enemyList.remove(enemy)
+                difficulty = difficulty / 1.01
+            if enemy.position[1] > 910:
+                enemyList.remove(enemy)
+                lives = lives - 1
+            enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
+            enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
+            enemy.render()
+            enemy.renderHealth()
 
-    """For loop with objects in EnemyList"""
-    for enemy in enemyList:
-        if enemy.health <= 0:
-            enemyList.remove(enemy)
-            difficulty = difficulty / 1.01
-        if enemy.position[1] > 910:
-            enemyList.remove(enemy)
-            lives = lives - 1
-        enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
-        enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5) #while loop
-        enemy.render()
-        enemy.renderHealth()
+        # -------- Shooting Conditions and Overheating -------- 
+        if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
+            if overheat == False:
+                laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
+                laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
+                lastShotTime = pygame.time.get_ticks()
+                heat = heat + 5
+        if pygame.time.get_ticks() - lastShotTime >= 10:
+            heat = heat - 0.1
 
-    # -------- Shooting Conditions and Overheating -------- 
-    if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
+        if heat <= 0:
+            heat = 0
+            #overheat = False                       #< Cheat mode!
+        elif heat > 100:
+            heat = 100
+            #overheat = True                        #< Cheat mode!
+
         if overheat == False:
-            laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
-            laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
-            lastShotTime = pygame.time.get_ticks()
-            heat = heat + 5
-    if pygame.time.get_ticks() - lastShotTime >= 10:
-        heat = heat - 0.1
+            pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
+        elif overheat == True:
+            pygame.draw.rect(windowSurface, (255, 0, 0), (playerX, 880, heat * 0.84, 10))
 
-    if heat <= 0:
-        heat = 0
-        #overheat = False                       #< Cheat mode!
-    elif heat > 100:
-        heat = 100
-        #overheat = True                        #< Cheat mode!
+        if True:
+            heatSurface.set_alpha(heat * 2 - 100)
+            windowSurface.blit(heatSurface, (0, 0))
 
-    if overheat == False:
-        pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
-    elif overheat == True:
-        pygame.draw.rect(windowSurface, (255, 0, 0), (playerX, 880, heat * 0.84, 10))
-
-    if True:
-        heatSurface.set_alpha(heat * 2 - 100)
-        windowSurface.blit(heatSurface, (0, 0))
-
-    # -------- Laser (Rendering & Collision) -------- 
-    for laser in laserList:
-        laser.rect = pygame.Rect(laser.position[0], laser.position[1], 4, 3 * 4)
-        for enemy in enemyList:
-            if laser.collision(enemy.rect) == True:
-                enemy.health = enemy.health - 10
-                enemy.speed = enemy.speed / 1.05
-                try:
+        # -------- Laser (Rendering & Collision) -------- 
+        for laser in laserList:
+            laser.rect = pygame.Rect(laser.position[0], laser.position[1], 4, 3 * 4)
+            for enemy in enemyList:
+                if laser.collision(enemy.rect) == True:
+                    enemy.health = enemy.health - 10
+                    enemy.speed = enemy.speed / 1.05
+                    try:
+                        laserList.remove(laser)
+                    except ValueError:
+                        pass
+                elif laser.collision(enemy.rect) == False:
+                    hasHit = False
+            try:
+                laser.render()
+                laser.position[1] = laser.position[1] - int(distance(1.7, frameTime))
+                if laser.position[1] < -10:
                     laserList.remove(laser)
-                except ValueError:
-                    pass
-            elif laser.collision(enemy.rect) == False:
-                hasHit = False
-        try:
-            laser.render()
-            laser.position[1] = laser.position[1] - int(distance(1.7, frameTime))
-            if laser.position[1] < -10:
-                laserList.remove(laser)
-        except:
-            pass
+            except:
+                pass
 
-    # -------- Debug text -------- 
-    if showDebug == True:
-        try:
-            debug = enemyList[0].speed
-        except:
-            debug = "Loading"
-        debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
-        windowSurface.blit(debugText, (1, 1))
+        # -------- Debug text -------- 
+        if showDebug == True:
+            try:
+                debug = enemyList[0].speed
+            except:
+                debug = "Loading"
+            debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
+            windowSurface.blit(debugText, (1, 1))
 
-    # -------- Debugging --------
-    """
-    for laser in laserList:
-        pygame.draw.rect(windowSurface, RED, laser.rect)
-    for enemy in enemyList:
-        pygame.draw.rect(windowSurface, GREEN, enemy.rect)
-    """
+        # -------- Debugging --------
+        """
+        for laser in laserList:
+            pygame.draw.rect(windowSurface, RED, laser.rect)
+        for enemy in enemyList:
+            pygame.draw.rect(windowSurface, GREEN, enemy.rect)
+        """
     # -------- Events -------- 
     pygame.display.update()
     for event in pygame.event.get():
