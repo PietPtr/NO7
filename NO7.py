@@ -101,6 +101,7 @@ background1 = GameObject([0, 0], backgroundImg, None)
 background2 = GameObject([0, -900], backgroundImg, None)
 
 """"Game States"""
+STARTGAME = 0
 GAMEPLAY = 1
 GAMEOVER = 2
 GameState = GAMEPLAY
@@ -141,6 +142,11 @@ while True:
     backgroundScrolling()
 
     # -------- Game state specific --------
+    """Menu with a start button"""
+    if GameState == STARTGAME:
+        pass
+
+    """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
         # -------- Render Lives --------
         for i in range(0, lives + 1):
@@ -184,6 +190,7 @@ while True:
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
                 lives = lives - 1
+                difficulty = 10 + (1.6 * lives)
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
             enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
             enemy.render()
@@ -259,19 +266,23 @@ while True:
         """
 
     # -------- Run if the player has <0 lives left --------
+    """Gameover Screen with try again button"""
     elif GameState == GAMEOVER:
+        # -------- Enemies finish their track --------
         for enemy in enemyList:
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
             enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
             enemy.render()
             enemy.renderHealth()
 
+        # -------- Blitting GameOver images etc --------
         windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 3.5))
 
         scoreText = basicFont.render("Score: " + str(score), True, YELLOW)
         scoreTextSize = scoreText.get_size()
-        print scoreTextSize
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
+
+        
 
     # -------- Run last outside GameState system --------
     """Update display"""
