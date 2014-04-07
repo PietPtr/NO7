@@ -126,6 +126,8 @@ lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
 
 gameOverIMG = pygame.image.load('GameOver.png')
 
+startGameIMG = pygame.image.load('start.png')
+
 heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
