@@ -47,15 +47,24 @@ class Enemy(GameObject):
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
 
 class Button(object):
-    def __init__(self, position, image, hovering): #position list [0, 0], list of two images: regular and hovering, boolean
+    def __init__(self, position, text): #position list [0, 0], list of two images: regular and hovering, boolean
         self.position = position
-        self.image = image
+        self.text = text
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
+        self.hovering = False
     def render(self):
         if self.hovering == False:
             windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
         elif self.hovering == True:
             windowSurface.blit(self.image[1], (self.position[0], self.position[1]))
+        buttonText = bigFont.render(str(self.text), False, YELLOW)
+        buttonTextSize = buttonText.get_size()
+        windowSurface.blit(buttonText, (self.position[0] + (100 - (buttonTextSize[0] / 2)), self.position[1] + (50 - (buttonTextSize[1] / 2))))
+    def checkHovering(self):
+        if mousePosition[0] > self.position[0] and mousePosition[0] < self.position[0] + 200 and mousePosition[1] > self.position[1] and mousePosition[1] < self.position[1] + 100: #Button is 200x100 px
+            self.hovering = True
+        else:
+            self.hovering = False
 
 #-------------- Constants and Variables --------------
 
@@ -115,7 +124,11 @@ background2 = GameObject([0, -900], backgroundImg, None)
 STARTGAME = 0
 GAMEPLAY = 1
 GAMEOVER = 2
-GameState = GAMEPLAY
+GameState = 2
+
+"""Lists with buttons (bl = button list"""
+#blStartGame = 
+blGameOver = [Button([200, 600], "TEXT"), Button([200, 705], "TEXT")]
 
 # -------------- Image and Music Loading --------------
 
@@ -149,6 +162,7 @@ for letter in alphabet:
 
 # -------------- Game Loop -------------- 
 while True:
+    
     # -------- Run first outside Gamestate system --------
     """Update loop specific variables"""
     loopTrack = loopTrack + 1
@@ -300,7 +314,10 @@ while True:
         scoreTextSize = scoreText.get_size()
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
 
-        
+        # -------- Handle Buttons --------
+        for button in blGameOver:
+            button.render()
+            button.checkHovering()
 
     # -------- Run last outside GameState system --------
     """Update display"""
