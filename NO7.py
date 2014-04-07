@@ -94,6 +94,7 @@ overheat = False
 collidingEnemies = None
 lives = 3
 difficulty = 15
+score = 0
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -121,6 +122,8 @@ enemyStretchedImage = pygame.transform.scale(enemyImage, (21 * 5, 27 * 5))
 
 lifeImage = pygame.image.load('life.png')
 lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
+
+gameOverIMG = pygame.image.load('GameOver.png')
 
 heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
@@ -177,6 +180,7 @@ while True:
             if enemy.health <= 0:
                 enemyList.remove(enemy)
                 difficulty = difficulty / 1.01
+                score = score + 1
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
                 lives = lives - 1
@@ -261,6 +265,13 @@ while True:
             enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
             enemy.render()
             enemy.renderHealth()
+
+        windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 3.5))
+
+        scoreText = basicFont.render("Score: " + str(score), True, YELLOW)
+        scoreTextSize = scoreText.get_size()
+        print scoreTextSize
+        windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
 
     # -------- Run last outside GameState system --------
     """Update display"""
