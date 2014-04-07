@@ -8,6 +8,16 @@ def distance(speed, time):
     distance = time * speed
     return distance
 
+def backgroundScrolling():
+    background1.position[1] = background1.position[1] + distance(1, frameTime)
+    background2.position[1] = background2.position[1] + distance(1, frameTime)
+    if background1.position[1] > 900:
+        background1.position[1] = 0
+        background2.position[1] = -900
+    
+    background1.render()
+    background2.render()
+
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
         self.position = position
@@ -36,16 +46,16 @@ class Enemy(GameObject):
         except TypeError:
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
 
-def backgroundScrolling():
-    background1.position[1] = background1.position[1] + distance(1, frameTime)
-    background2.position[1] = background2.position[1] + distance(1, frameTime)
-    if background1.position[1] > 900:
-        background1.position[1] = 0
-        background2.position[1] = -900
-    
-    background1.render()
-    background2.render()
-
+class Button(object):
+    def __init__(self, position, image, hovering): #position list [0, 0], list of two images: regular and hovering, boolean
+        self.position = position
+        self.image = image
+        self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
+    def render(self):
+        if self.hovering == False:
+            windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
+        elif self.hovering == True:
+            windowSurface.blit(self.image[1], (self.position[0], self.position[1]))
 
 #-------------- Constants and Variables --------------
 
@@ -64,7 +74,8 @@ showDebug = False
 """Initiate pygame and set up quick access variable"""
 pygame.init()
 mainClock = pygame.time.Clock()
-basicFont = pygame.font.SysFont(None, 23)
+smallFont = pygame.font.SysFont("Impact", 22)
+bigFont = pygame.font.SysFont("Impact", 50)
 
 """Constants"""
 WINDOWWIDTH = 600
@@ -126,10 +137,15 @@ lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
 
 gameOverIMG = pygame.image.load('GameOver.png')
 
-startGameIMG = pygame.image.load('start.png')
-
 heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
+
+"""
+alphabet = ['a', 'b', 'c', 'd']#, 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+for letter in alphabet:
+    pygame.image.load(
+"""
 
 # -------------- Game Loop -------------- 
 while True:
@@ -251,7 +267,7 @@ while True:
                 debug = enemyList[0].speed
             except:
                 debug = "Loading"
-            debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
+            debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
             windowSurface.blit(debugText, (1, 1))
 
         # -------- Check Death --------
@@ -269,7 +285,7 @@ while True:
 
     # -------- Run if the player has <0 lives left --------
     """Gameover Screen with try again button"""
-    elif GameState == GAMEOVER:
+    if GameState == GAMEOVER:
         # -------- Enemies finish their track --------
         for enemy in enemyList:
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
@@ -280,7 +296,7 @@ while True:
         # -------- Blitting GameOver images etc --------
         windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 3.5))
 
-        scoreText = basicFont.render("Score: " + str(score), True, YELLOW)
+        scoreText = bigFont.render("Score: " + str(score), False, YELLOW)
         scoreTextSize = scoreText.get_size()
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
 
