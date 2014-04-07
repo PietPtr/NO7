@@ -49,7 +49,7 @@ YELLOW = (255, 200, 0)
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700,40)
 
-showDebug = True
+showDebug = False
 
 """Initiate pygame and set up quick access variable"""
 pygame.init()
@@ -184,10 +184,10 @@ while True:
 
     if heat <= 0:
         heat = 0
-        #overheat = False                       #< Cheat mode!
+        overheat = False                       #< Cheat mode!
     elif heat > 100:
         heat = 100
-        #overheat = True                        #< Cheat mode!
+        overheat = True                        #< Cheat mode!
 
     if overheat == False:
         pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
