@@ -15,7 +15,7 @@ def quitgame():
 def animation(frameList, timePerFrame, lastFrameTime, lastFrame, position): #timePerFrame in ms
     if pygame.time.get_ticks() - lastFrameTime >= timePerFrame:
         try:
-            windowSurface.blit(frameList[lastFrame + 1])
+            windowSurface.blit(frameList[lastFrame + 1], (position[0], position[1]))
         except:
             return 0, 0
     return pygame.time.get_ticks(), lastFrame + 1
@@ -282,6 +282,7 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
+                    #animation(explosionList, 100, , 0, [enemy.position[0], enemy.position[1])
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
