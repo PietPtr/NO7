@@ -22,6 +22,34 @@ def backgroundScrolling():
     background1.render()
     background2.render()
 
+def restart():
+    global playerX
+    global laserList
+    global enemyList
+    global lastShotTime
+    global lastSpawn
+    global loopTrack
+    global heat
+    global overheat
+    global collidingEnemies
+    global lives
+    global difficulty
+    global score
+    global showDebug
+    playerX = 300
+    laserList = []
+    enemyList = []
+    lastShotTime = pygame.time.get_ticks()
+    lastSpawn = pygame.time.get_ticks()
+    loopTrack = 0
+    heat = 0
+    overheat = False
+    collidingEnemies = None
+    lives = 3
+    difficulty = 15
+    score = 0
+    showDebug = False
+
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
         self.position = position
@@ -102,16 +130,6 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 200, 0)
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700,40)
-
-showDebug = False
-
-"""Initiate pygame and set up quick access variable"""
-pygame.init()
-mainClock = pygame.time.Clock()
-smallFont = pygame.font.SysFont("Impact", 22)
-bigFont = pygame.font.SysFont("Impact", 50)
-
 """Constants"""
 WINDOWWIDTH = 600
 WINDOWHEIGHT = 900
@@ -122,29 +140,17 @@ PLAYERHEIGHT = 27
 SHOOTDELAY = 100
 BULLETSPEED = 1.7
 
-"""Other variables"""
-playerX = WINDOWWIDTH / 2
+"""Initiate pygame and set up quick access variable"""
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700,40)
 
+pygame.init()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0)
+mainClock = pygame.time.Clock()
+smallFont = pygame.font.SysFont("Impact", 22)
+bigFont = pygame.font.SysFont("Impact", 50)
 
-laserList = []
-enemyList = []
-
-lastShotTime = pygame.time.get_ticks()
-lastSpawn = pygame.time.get_ticks()
-
-loopTrack = 0
-
-heat = 0
-overheat = False
-collidingEnemies = None
-lives = 3
-difficulty = 15
-score = 0
-
-backgroundImg = pygame.image.load('background.png')
-background1 = GameObject([0, 0], backgroundImg, None)
-background2 = GameObject([0, -900], backgroundImg, None)
+"""Other variables"""
+restart()
 
 """"Game States"""
 STARTGAME = 0
@@ -152,10 +158,13 @@ GAMEPLAY = 1
 GAMEOVER = 2
 GameState = GAMEPLAY
 
-"""Button objects"""
-#blStartGame = 
+"""Objects"""
 quitButton = Button([200, 600], "QUIT")
 retryButton = Button([200, 705], "RETRY")
+
+backgroundImg = pygame.image.load('background.png')
+background1 = GameObject([0, 0], backgroundImg, None)
+background2 = GameObject([0, -900], backgroundImg, None)
 
 # -------------- Image and Music Loading --------------
 
@@ -347,6 +356,7 @@ while True:
         # -------- Handle Buttons --------
         if retryButton.doTasks(0) == True:
             GameState = GAMEPLAY
+            restart()
         if quitButton.doTasks(0) == True:
             quitgame()
 
