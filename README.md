@@ -18,3 +18,7 @@ Double click the .py file to play!
 --WARNING--
 
 The code in the .zip file may be outdated, download the program from github to get the latest version
+
+===
+
+To disable cheat mode (add overheating), remove the '#' at the start of line 271 and 274
