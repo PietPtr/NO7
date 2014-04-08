@@ -12,14 +12,6 @@ def quitgame():
     pygame.quit()
     sys.exit()
 
-def animation(frameList, timePerFrame, lastFrameTime, lastFrame, position): #timePerFrame in ms
-    if pygame.time.get_ticks() - lastFrameTime >= timePerFrame:
-        try:
-            windowSurface.blit(frameList[lastFrame + 1], (position[0], position[1]))
-        except:
-            return 0, 0
-    return pygame.time.get_ticks(), lastFrame + 1
-
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
     background2.position[1] = background2.position[1] + distance(1, frameTime)
@@ -82,7 +74,24 @@ class Button(object):
             return True
         else:
             return False
-        
+
+class Animation(object):
+    def __init__(self, frameList, frameTime, lastFrameTime, currentFrame, position): #list with pictures, time in ms between frames, time the last frame was displayed, current list index, list
+        self.frameList = frameList
+        self.frameTime = frameTime
+        self.lastFrameTime = lastFrameTime
+        self.currentFrame = currentFrame
+        self.position = position
+    def render(self):
+        if pygame.time.get_ticks() - self.lastFrameTime >= self.frameTime:
+            self.currentFrame = self.currentFrame + 1
+            self.lastFrameTime = pygame.time.get_ticks()
+        try:
+            windowSurface.blit(self.frameList[self.currentFrame], (self.position[0], self.position[1]))
+        except IndexError:
+            return 1
+        return 0
+
 #-------------- Constants and Variables --------------
 
 """Colors"""
@@ -141,7 +150,7 @@ background2 = GameObject([0, -900], backgroundImg, None)
 STARTGAME = 0
 GAMEPLAY = 1
 GAMEOVER = 2
-GameState = 2
+GameState = GAMEPLAY
 
 """Lists with buttons (bl = button list"""
 #blStartGame = 
@@ -169,13 +178,15 @@ heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
 """Animation lists"""
-explosionList = [pygame.image.load('explosion0.png'),
-                 pygame.image.load('explosion1.png'),
-                 pygame.image.load('explosion2.png'),
-                 pygame.image.load('explosion3.png'),
-                 pygame.image.load('explosion4.png'),
-                 pygame.image.load('explosion5.png'),
-                 pygame.image.load('explosion6.png')]
+explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion1.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion2.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion3.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion4.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * 4, 21 * 4))]
+
+animationObjects = []
 
 # -------------- Game Loop -------------- 
 while True:
@@ -282,7 +293,7 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
-                    #animation(explosionList, 100, , 0, [enemy.position[0], enemy.position[1])
+                    animationObjects.append(Animation(explosionList, 50, pygame.time.get_ticks(), 0, [enemy.position[0], enemy.position[1]]))
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
@@ -339,6 +350,11 @@ while True:
             button.click(0)
 
     # -------- Run last outside GameState system --------
+    """Handle Animations"""
+    for animation in animationObjects:
+        if animation.render() == 1:
+            animationObjects.remove(animation)
+    
     """Update display"""
     pygame.display.update()
 
