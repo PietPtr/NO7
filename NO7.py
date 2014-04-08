@@ -149,12 +149,9 @@ blGameOver = [Button([200, 600], "TEXT"), Button([200, 705], "TEXT")]
 
 # -------------- Image and Music Loading --------------
 
+"""Sprites"""
 playerImage = pygame.image.load('Player_ship.png')
 playerStretchedImage = pygame.transform.scale(playerImage, (PLAYERWIDTH * 4, PLAYERHEIGHT * 4))
-playerImageLeft = pygame.image.load('shipLeft.png')
-playerStretchedImageLeft = pygame.transform.scale(playerImageLeft, (PLAYERWIDTH * 4, PLAYERHEIGHT * 4))
-playerImageRight = pygame.image.load('shipRight.png')
-playerStretchedImageRight = pygame.transform.scale(playerImageRight, (PLAYERWIDTH * 4, PLAYERHEIGHT * 4))
 
 laserImage = pygame.image.load('lasers.png')
 laserStretchedImage = pygame.transform.scale(laserImage, (1 * 4, 3 * 4))
@@ -167,15 +164,18 @@ lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
 
 gameOverIMG = pygame.image.load('GameOver.png')
 
+"""Overlay"""
 heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
-"""
-alphabet = ['a', 'b', 'c', 'd']#, 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-for letter in alphabet:
-    pygame.image.load(
-"""
+"""Animation lists"""
+explosionList = [pygame.image.load('explosion0.png'),
+                 pygame.image.load('explosion1.png'),
+                 pygame.image.load('explosion2.png'),
+                 pygame.image.load('explosion3.png'),
+                 pygame.image.load('explosion4.png'),
+                 pygame.image.load('explosion5.png'),
+                 pygame.image.load('explosion6.png')]
 
 # -------------- Game Loop -------------- 
 while True:
