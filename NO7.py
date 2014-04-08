@@ -8,6 +8,10 @@ def distance(speed, time):
     distance = time * speed
     return distance
 
+def quitgame():
+    pygame.quit()
+    sys.exit()
+
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
     background2.position[1] = background2.position[1] + distance(1, frameTime)
@@ -65,7 +69,12 @@ class Button(object):
             self.hovering = True
         else:
             self.hovering = False
-
+    def click(self, button): #button in 0 (left click), 1 (scroll wheel click), 2(right click)
+        if self.hovering == True and pygame.mouse.get_pressed()[button]:
+            return True
+        else:
+            return False
+        
 #-------------- Constants and Variables --------------
 
 """Colors"""
@@ -318,6 +327,7 @@ while True:
         for button in blGameOver:
             button.render()
             button.checkHovering()
+            button.click(0)
 
     # -------- Run last outside GameState system --------
     """Update display"""
