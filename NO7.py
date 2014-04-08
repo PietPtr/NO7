@@ -4,13 +4,13 @@ from pygame.locals import *
 
 # -------------- Functions and Classes -------------- 
 
-def distance(speed, time):
-    distance = time * speed
-    return distance
-
 def quitgame():
     pygame.quit()
     sys.exit()
+
+def distance(speed, time):
+    distance = time * speed
+    return distance
 
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
@@ -56,7 +56,7 @@ class Button(object):
         self.text = text
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
         self.hovering = False
-    def render(self):
+    def doTasks(self, button): #Render button, check for hovering mouse and check for clicks
         if self.hovering == False:
             windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
         elif self.hovering == True:
@@ -64,12 +64,12 @@ class Button(object):
         buttonText = bigFont.render(str(self.text), False, YELLOW)
         buttonTextSize = buttonText.get_size()
         windowSurface.blit(buttonText, (self.position[0] + (100 - (buttonTextSize[0] / 2)), self.position[1] + (50 - (buttonTextSize[1] / 2))))
-    def checkHovering(self):
+        
         if mousePosition[0] > self.position[0] and mousePosition[0] < self.position[0] + 200 and mousePosition[1] > self.position[1] and mousePosition[1] < self.position[1] + 100: #Button is 200x100 px
             self.hovering = True
         else:
             self.hovering = False
-    def click(self, button): #button in 0 (left click), 1 (scroll wheel click), 2(right click)
+        
         if self.hovering == True and pygame.mouse.get_pressed()[button]:
             return True
         else:
@@ -152,9 +152,10 @@ GAMEPLAY = 1
 GAMEOVER = 2
 GameState = GAMEPLAY
 
-"""Lists with buttons (bl = button list"""
+"""Button objects"""
 #blStartGame = 
-blGameOver = [Button([200, 600], "TEXT"), Button([200, 705], "TEXT")]
+quitButton = Button([200, 600], "QUIT")
+retryButton = Button([200, 705], "RETRY")
 
 # -------------- Image and Music Loading --------------
 
@@ -293,7 +294,7 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
-                    animationObjects.append(Animation(explosionList, 50, pygame.time.get_ticks(), 0, [enemy.position[0], enemy.position[1]]))
+                    animationObjects.append(Animation(explosionList, 30, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + 11, int(enemy.position[1])]))
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
@@ -344,10 +345,10 @@ while True:
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
 
         # -------- Handle Buttons --------
-        for button in blGameOver:
-            button.render()
-            button.checkHovering()
-            button.click(0)
+        if retryButton.doTasks(0) == True:
+            GameState = GAMEPLAY
+        if quitButton.doTasks(0) == True:
+            quitgame()
 
     # -------- Run last outside GameState system --------
     """Handle Animations"""
@@ -364,5 +365,4 @@ while True:
             if event.key == 284:
                 showDebug = not showDebug
         if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
+            quitgame()
