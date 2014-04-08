@@ -12,6 +12,14 @@ def quitgame():
     pygame.quit()
     sys.exit()
 
+def animation(frameList, timePerFrame, lastFrameTime, lastFrame, position): #timePerFrame in ms
+    if pygame.time.get_ticks() - lastFrameTime >= timePerFrame:
+        try:
+            windowSurface.blit(frameList[lastFrame + 1])
+        except:
+            return 0, 0
+    return pygame.time.get_ticks(), lastFrame + 1
+
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
     background2.position[1] = background2.position[1] + distance(1, frameTime)
