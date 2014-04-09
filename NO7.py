@@ -21,13 +21,6 @@ def backgroundScrolling():
     
     background1.render()
     background2.render()
-
-def bigFont(text):
-    smallFont = pygame.font.SysFont("Impact", 20)
-    textIMG = smallFont.render(str(text), False, YELLOW)
-    IMGSize = textIMG.get_size()
-    bigText = pygame.transform.scale(textIMG, (IMGSize[0] * 2, IMGSize[1] * 2))
-    return bigText
     
 def restart():
     global playerX
@@ -97,7 +90,7 @@ class Button(object):
         elif self.hovering == True:
             windowSurface.blit(self.image[1], (self.position[0], self.position[1]))
         
-        buttonText = bigFont(self.text)
+        buttonText = bigFont.render(str(self.text), False, YELLOW)
         buttonTextSize = buttonText.get_size()
         windowSurface.blit(buttonText, (self.position[0] + (100 - (buttonTextSize[0] / 2)), self.position[1] + (50 - (buttonTextSize[1] / 2))))
         
@@ -155,6 +148,7 @@ pygame.init()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0)
 mainClock = pygame.time.Clock()
 smallFont = pygame.font.SysFont("Impact", 22)
+bigFont = pygame.font.SysFont("Impact", 44)
 
 """Other variables"""
 restart()
@@ -167,6 +161,8 @@ GameState = GAMEMENU
 
 """Objects"""
 startButton = Button([200, 300], "START")
+optionButton = Button([200, 405], "OPTIONS")
+highScoreButton = Button([200, 510], "HIGHSCORES")
 
 quitButton = Button([200, 600], "QUIT")
 retryButton = Button([200, 705], "RETRY")
@@ -359,7 +355,7 @@ while True:
         # -------- Blitting GameOver images etc --------
         windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 3.5))
 
-        scoreText = bigFont("Score: " + str(score))
+        scoreText = bigFont.render("Score: " + str(score), False, YELLOW)
         scoreTextSize = scoreText.get_size()
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
 
