@@ -101,16 +101,14 @@ class Enemy(GameObject):
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
 
 class Button(object):
-    global getClick
     def __init__(self, position, text, function): #position list [0, 0], list of two images: regular and hovering, boolean
         self.position = position
         self.text = text
         self.function = function
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
         self.hovering = False
-    def doTasks(self, button): #Render button, check for hovering mouse and check for clicks
+    def doTasks(self): #Render button, check for hovering mouse and check for clicks
         global clicked
-        getClick = button + 1
         if self.hovering == False:
             windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
         elif self.hovering == True:
@@ -125,7 +123,7 @@ class Button(object):
         else:
             self.hovering = False
 
-        if self.hovering == True and clicked == True: #and event.type == MOUSEBUTTONUP and event.button == button:
+        if self.hovering == True and clicked == True:
             clicked = False
             self.function()
         else:
@@ -258,25 +256,19 @@ while True:
     if GameState == GAMEMENU:
         windowSurface.blit(logo, (200, 150))
         
-        if quitButton.doTasks(0) == True:
-            quitgame()
-        if startButton.doTasks(0) == True:
-            restart()
-            GameState = GAMEPLAY
-        if optionButton.doTasks(0) == True:
-            GameState = OPTIONS
-        if highScoreButton.doTasks(0) == True:
-            GameState = HIGHSCORE
+        quitButton.doTasks()
+        startButton.doTasks()
+        optionButton.doTasks()
+        highScoreButton.doTasks()
 
     """Display 10 highest scores"""
     if GameState == HIGHSCORE:
-        if backButton.doTasks(0) == True:
+        if backButton.doTasks():
             GameState = GAMEMENU
 
     """Options"""
     if GameState == OPTIONS:
-        if backButton.doTasks(0) == True:
-            GameState = GAMEMENU
+        backButton.doTasks()
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
@@ -413,15 +405,9 @@ while True:
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 350))
 
         # -------- Handle Buttons --------
-        if retryButton.doTasks(0) == True:
-            GameState = GAMEPLAY
-            restart()
-        if quitButton.doTasks(0) == True:
-            saveFiles()
-            quitgame()
-        if menuButton.doTasks(0) == True:
-            GameState = GAMEMENU
-            restart()
+        retryButton.doTasks()
+        quitButton.doTasks()
+        menuButton.doTasks()
 
     # -------- Run last outside GameState system --------
     """"reset variables"""
