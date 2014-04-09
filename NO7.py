@@ -21,7 +21,24 @@ def backgroundScrolling():
     
     background1.render()
     background2.render()
-    
+
+def saveFiles():
+    """Set up option file"""
+    global options
+    options = [1.01]
+    try:
+        options = pickle.load(open("options.dat", "rb"))
+    except IOError:
+        pickle.dump(options, open("options.dat", "wb"))
+
+    """Set up high score file"""
+    global scores
+    scores = []
+    try:
+        scores = pickle.load(open("highscores.dat", "rb"))
+    except IOError:
+        pickle.dump(scores, open("options.dat", "wb"))
+
 def restart():
     global playerX
     global laserList
@@ -128,6 +145,8 @@ class Animation(object):
         return 0
 
 #-------------- Constants and Variables --------------
+"""Load options and scores"""
+saveFiles()
 
 """Colors"""
 BLACK = (0, 0, 0)
@@ -240,13 +259,17 @@ while True:
             restart()
             GameState = GAMEPLAY
         if optionButton.doTasks(0) == True:
-            pass
-            #GameState = OPTIONS
+            GameState = OPTIONS
         if highScoreButton.doTasks(0) == True:
             GameState = HIGHSCORE
 
     """Display 10 highest scores"""
     if GameState == HIGHSCORE:
+        if backButton.doTasks(0) == True:
+            GameState = GAMEMENU
+
+    """Options"""
+    if GameState == OPTIONS:
         if backButton.doTasks(0) == True:
             GameState = GAMEMENU
 
@@ -287,7 +310,7 @@ while True:
         for enemy in enemyList:
             if enemy.health <= 0:
                 enemyList.remove(enemy)
-                difficulty = difficulty / 1.01
+                difficulty = difficulty / options[0]
                 score = score + 1
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
@@ -389,6 +412,7 @@ while True:
             GameState = GAMEPLAY
             restart()
         if quitButton.doTasks(0) == True:
+            saveFiles()
             quitgame()
         if menuButton.doTasks(0) == True:
             GameState = GAMEMENU
@@ -415,4 +439,5 @@ while True:
             if event.key == 284:
                 showDebug = not showDebug
         if event.type == QUIT:
+            saveFiles()
             quitgame()
