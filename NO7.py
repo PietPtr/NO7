@@ -154,18 +154,21 @@ bigFont = pygame.font.SysFont("Impact", 44)
 restart()
 
 """"Game States"""
-GAMEMENU = 0
-GAMEPLAY = 1
-GAMEOVER = 2
-GameState = GAMEMENU
+GAMEMENU  =  0
+GAMEPLAY  =  1
+GAMEOVER  =  2
+OPTIONS   =  3
+HIGHSCORE =  4
+GameState =  GAMEMENU
 
 """Objects"""
 startButton = Button([200, 300], "START")
 optionButton = Button([200, 405], "OPTIONS")
 highScoreButton = Button([200, 510], "HIGHSCORES")
 
-quitButton = Button([200, 600], "QUIT")
-retryButton = Button([200, 705], "RETRY")
+menuButton = Button([200, 510], "MENU")
+quitButton = Button([200, 615], "QUIT")
+retryButton = Button([200, 405], "RETRY")
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -224,6 +227,11 @@ while True:
         if startButton.doTasks(0) == True:
             restart()
             GameState = GAMEPLAY
+        if optionButton.doTasks(0) == True:
+            pass
+            #GameState = OPTIONS
+        if highScoreButton.doTasks(0) == True:
+            pass
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
@@ -353,11 +361,11 @@ while True:
             enemy.renderHealth()
 
         # -------- Blitting GameOver images etc --------
-        windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 3.5))
+        windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, 200))
 
         scoreText = bigFont.render("Score: " + str(score), False, YELLOW)
         scoreTextSize = scoreText.get_size()
-        windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 460))
+        windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 350))
 
         # -------- Handle Buttons --------
         if retryButton.doTasks(0) == True:
@@ -365,6 +373,9 @@ while True:
             restart()
         if quitButton.doTasks(0) == True:
             quitgame()
+        if menuButton.doTasks(0) == True:
+            GameState = GAMEMENU
+            restart()
 
     # -------- Run last outside GameState system --------
     """Handle Animations"""
