@@ -18,6 +18,7 @@ def restart():
     global difficulty
     global score
     global showDebug
+    global clicked
     playerX = 300
     laserList = []
     enemyList = []
@@ -31,6 +32,7 @@ def restart():
     difficulty = 15
     score = 0
     showDebug = False
+    clicked = False
 
 def changeGameState(newState):
     global GameState
@@ -251,6 +253,19 @@ while True:
     """Background"""
     backgroundScrolling()
 
+    """Events"""
+    for event in pygame.event.get():
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                clicked = True
+        if event.type == KEYUP:
+            if event.key == 284:
+                showDebug = not showDebug
+        if event.type == QUIT:
+            saveFiles()
+            quitgame()
+
+
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
@@ -421,14 +436,3 @@ while True:
     """Update display"""
     pygame.display.update()
 
-    """Events"""
-    for event in pygame.event.get():
-        if event.type == MOUSEBUTTONUP:
-            if event.button == 1:
-                clicked = True
-        if event.type == KEYUP:
-            if event.key == 284:
-                showDebug = not showDebug
-        if event.type == QUIT:
-            saveFiles()
-            quitgame()
