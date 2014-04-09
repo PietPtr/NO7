@@ -170,7 +170,7 @@ GameState =  GAMEMENU
 """Objects"""
 startButton = Button([200, 300], "START")
 optionButton = Button([200, 405], "OPTIONS")
-highScoreButton = Button([200, 510], "HIGHSCORES")
+highScoreButton = Button([200, 510], "TOPSCORE")
 
 menuButton = Button([200, 510], "MENU")
 quitButton = Button([200, 615], "QUIT")
@@ -196,6 +196,8 @@ enemyStretchedImage = pygame.transform.scale(enemyImage, (21 * 5, 27 * 5))
 
 lifeImage = pygame.image.load('life.png')
 lifeImage = pygame.transform.scale(lifeImage, (18 * 3, 18 * 3))
+
+logo = pygame.image.load('logo.png')
 
 gameOverIMG = pygame.image.load('GameOver.png')
 
@@ -230,6 +232,8 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
+        windowSurface.blit(logo, (200, 150))
+        
         if quitButton.doTasks(0) == True:
             quitgame()
         if startButton.doTasks(0) == True:
