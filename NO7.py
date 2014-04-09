@@ -4,9 +4,38 @@ from pygame.locals import *
 
 # -------------- Functions and Classes -------------- 
 
-def quitgame():
-    pygame.quit()
-    sys.exit()
+def restart():
+    global playerX
+    global laserList
+    global enemyList
+    global lastShotTime
+    global lastSpawn
+    global loopTrack
+    global heat
+    global overheat
+    global collidingEnemies
+    global lives
+    global difficulty
+    global score
+    global showDebug
+    playerX = 300
+    laserList = []
+    enemyList = []
+    lastShotTime = pygame.time.get_ticks()
+    lastSpawn = pygame.time.get_ticks()
+    loopTrack = 0
+    heat = 0
+    overheat = False
+    collidingEnemies = None
+    lives = 3
+    difficulty = 15
+    score = 0
+    showDebug = False
+
+def changeGameState(newState):
+    global GameState
+    restart()
+    GameState = newState
 
 def distance(speed, time):
     distance = time * speed
@@ -37,35 +66,11 @@ def saveFiles():
     try:
         scores = pickle.load(open("highscores.dat", "rb"))
     except IOError:
-        pickle.dump(scores, open("options.dat", "wb"))
+        pickle.dump(scores, open("highscores.dat", "wb"))
 
-def restart():
-    global playerX
-    global laserList
-    global enemyList
-    global lastShotTime
-    global lastSpawn
-    global loopTrack
-    global heat
-    global overheat
-    global collidingEnemies
-    global lives
-    global difficulty
-    global score
-    global showDebug
-    playerX = 300
-    laserList = []
-    enemyList = []
-    lastShotTime = pygame.time.get_ticks()
-    lastSpawn = pygame.time.get_ticks()
-    loopTrack = 0
-    heat = 0
-    overheat = False
-    collidingEnemies = None
-    lives = 3
-    difficulty = 15
-    score = 0
-    showDebug = False
+def quitgame():
+    pygame.quit()
+    sys.exit()
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -97,9 +102,10 @@ class Enemy(GameObject):
 
 class Button(object):
     global getClick
-    def __init__(self, position, text): #position list [0, 0], list of two images: regular and hovering, boolean
+    def __init__(self, position, text, function): #position list [0, 0], list of two images: regular and hovering, boolean
         self.position = position
         self.text = text
+        self.function = function
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
         self.hovering = False
     def doTasks(self, button): #Render button, check for hovering mouse and check for clicks
@@ -119,10 +125,9 @@ class Button(object):
         else:
             self.hovering = False
 
-
         if self.hovering == True and clicked == True: #and event.type == MOUSEBUTTONUP and event.button == button:
             clicked = False
-            return True
+            self.function()
         else:
             return False
 
@@ -187,15 +192,15 @@ HIGHSCORE =  4
 GameState =  GAMEMENU
 
 """Objects"""
-startButton = Button([200, 300], "START")
-optionButton = Button([200, 405], "OPTIONS")
-highScoreButton = Button([200, 510], "TOPSCORE")
+startButton = Button([200, 300], "START", lambda:changeGameState(GAMEPLAY))
+optionButton = Button([200, 405], "OPTIONS", lambda:changeGameState(OPTIONS))
+highScoreButton = Button([200, 510], "TOPSCORE", lambda:changeGameState(HIGHSCORE))
 
-menuButton = Button([200, 510], "MENU")
-quitButton = Button([200, 615], "QUIT")
-retryButton = Button([200, 405], "RETRY")
+menuButton = Button([200, 510], "MENU", lambda:changeGameState(GAMEMENU))
+quitButton = Button([200, 615], "QUIT", lambda:quitgame())
+retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
-backButton = Button([200, 615], "BACK")
+backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
