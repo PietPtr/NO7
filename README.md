@@ -16,3 +16,9 @@ Double click the .py file to play!
 ===
 
 To disable cheat mode (add overheating), remove the '#' at the start of line 271 and 274
+
+===
+
+Controls:
+- Space bar/Click to shoot
+- Move the mouse to move
