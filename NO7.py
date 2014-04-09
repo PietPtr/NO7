@@ -160,12 +160,14 @@ smallFont = pygame.font.SysFont("Impact", 22)
 restart()
 
 """"Game States"""
-STARTGAME = 0
+GAMEMENU = 0
 GAMEPLAY = 1
 GAMEOVER = 2
-GameState = GAMEPLAY
+GameState = GAMEMENU
 
 """Objects"""
+startButton = Button([200, 300], "START")
+
 quitButton = Button([200, 600], "QUIT")
 retryButton = Button([200, 705], "RETRY")
 
@@ -220,8 +222,12 @@ while True:
 
     # -------- Game state specific --------
     """Menu with a start button"""
-    if GameState == STARTGAME:
-        pass
+    if GameState == GAMEMENU:
+        if quitButton.doTasks(0) == True:
+            quitgame()
+        if startButton.doTasks(0) == True:
+            restart()
+            GameState = GAMEPLAY
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
@@ -341,7 +347,6 @@ while True:
             pygame.draw.rect(windowSurface, GREEN, enemy.rect)
         """
 
-    # -------- Run if the player has <0 lives left --------
     """Gameover Screen with try again button"""
     if GameState == GAMEOVER:
         # -------- Enemies finish their track --------
