@@ -79,12 +79,15 @@ class Enemy(GameObject):
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
 
 class Button(object):
+    global getClick
     def __init__(self, position, text): #position list [0, 0], list of two images: regular and hovering, boolean
         self.position = position
         self.text = text
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
         self.hovering = False
     def doTasks(self, button): #Render button, check for hovering mouse and check for clicks
+        global clicked
+        getClick = button + 1
         if self.hovering == False:
             windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
         elif self.hovering == True:
@@ -93,16 +96,19 @@ class Button(object):
         buttonText = bigFont.render(str(self.text), False, YELLOW)
         buttonTextSize = buttonText.get_size()
         windowSurface.blit(buttonText, (self.position[0] + (100 - (buttonTextSize[0] / 2)), self.position[1] + (50 - (buttonTextSize[1] / 2))))
-        
+
         if mousePosition[0] > self.position[0] and mousePosition[0] < self.position[0] + 200 and mousePosition[1] > self.position[1] and mousePosition[1] < self.position[1] + 100: #Button is 200x100 px
             self.hovering = True
         else:
             self.hovering = False
-        
-        if self.hovering == True and pygame.mouse.get_pressed()[button]:
+
+
+        if self.hovering == True and clicked == True: #and event.type == MOUSEBUTTONUP and event.button == button:
+            clicked = False
             return True
         else:
             return False
+
 
 class Animation(object):
     def __init__(self, frameList, frameTime, lastFrameTime, currentFrame, position): #list with pictures, time in ms between frames, time the last frame was displayed, current list index, list
@@ -170,6 +176,8 @@ menuButton = Button([200, 510], "MENU")
 quitButton = Button([200, 615], "QUIT")
 retryButton = Button([200, 405], "RETRY")
 
+backButton = Button([200, 615], "BACK")
+
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
 background2 = GameObject([0, -900], backgroundImg, None)
@@ -231,7 +239,12 @@ while True:
             pass
             #GameState = OPTIONS
         if highScoreButton.doTasks(0) == True:
-            pass
+            GameState = HIGHSCORE
+
+    """Display 10 highest scores"""
+    if GameState == HIGHSCORE:
+        if backButton.doTasks(0) == True:
+            GameState = GAMEMENU
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
@@ -378,6 +391,9 @@ while True:
             restart()
 
     # -------- Run last outside GameState system --------
+    """"reset variables"""
+    clicked = False
+    
     """Handle Animations"""
     for animation in animationObjects:
         if animation.render() == 1:
@@ -388,6 +404,9 @@ while True:
 
     """Events"""
     for event in pygame.event.get():
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                clicked = True
         if event.type == KEYUP:
             if event.key == 284:
                 showDebug = not showDebug
