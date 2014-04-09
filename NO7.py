@@ -234,10 +234,8 @@ while True:
         if playerX != pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2:
             if int(playerX) > int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
                 playerX = playerX - distance(1, frameTime)
-                #windowSurface.blit(playerStretchedImageLeft, (playerX, 770))
             elif int(playerX) < int(pygame.mouse.get_pos()[0] - PLAYERWIDTH * 2):
                 playerX = playerX + distance(1, frameTime)
-                #windowSurface.blit(playerStretchedImageRight, (playerX, 770))
         else:
             windowSurface.blit(playerStretchedImage, (playerX, 770))
         windowSurface.blit(playerStretchedImage, (playerX, 770))
