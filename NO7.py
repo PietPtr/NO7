@@ -74,6 +74,13 @@ def quitgame():
     pygame.quit()
     sys.exit()
 
+def music(song):
+    global musicStarted
+    if musicStarted == False:
+        pygame.mixer.music.load(song + ".mp3")
+        pygame.mixer.music.play(-1, 0.0)
+        musicStarted = True
+
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
         self.position = position
@@ -128,6 +135,7 @@ class Button(object):
         if self.hovering == True and clicked == True:
             clicked = False
             self.function()
+            return True
         else:
             return False
 
@@ -182,6 +190,7 @@ bigFont = pygame.font.SysFont("Impact", 44)
 
 """Other variables"""
 restart()
+musicStarted = False
 
 """"Game States"""
 GAMEMENU  =  0
@@ -240,9 +249,14 @@ explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21
 
 animationObjects = []
 
+laserSound = pygame.mixer.Sound('shot.wav')
+
+pygame.mixer.music.load("Launchpad.mp3")
+pygame.mixer.music.play(-1, 0.0)
+
 # -------------- Game Loop -------------- 
 while True:
-    
+    print musicStarted
     # -------- Run first outside Gamestate system --------
     """Update loop specific variables"""
     loopTrack = loopTrack + 1
@@ -269,10 +283,13 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
+        music("launchpad")
+        
         windowSurface.blit(logo, (200, 150))
         
         quitButton.doTasks()
-        startButton.doTasks()
+        if startButton.doTasks() == True:
+            musicStarted = False
         optionButton.doTasks()
         highScoreButton.doTasks()
 
@@ -287,6 +304,7 @@ while True:
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
+        music("ToTheMoon")
         # -------- Render Lives --------
         for i in range(0, lives + 1):
             windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
@@ -336,6 +354,7 @@ while True:
         # -------- Shooting Conditions and Overheating -------- 
         if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
             if overheat == False:
+                laserSound.play()
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
@@ -422,7 +441,8 @@ while True:
         # -------- Handle Buttons --------
         retryButton.doTasks()
         quitButton.doTasks()
-        menuButton.doTasks()
+        if menuButton.doTasks() == True:
+            musicStarted = False
 
     # -------- Run last outside GameState system --------
     """"reset variables"""
