@@ -2,6 +2,10 @@ from __future__ import division
 import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
+# -------------- Variables needed in functions --------------
+options = [1.01]
+scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 # -------------- Functions and Classes -------------- 
 
 def restart():
@@ -166,7 +170,7 @@ class Animation(object):
 
 #-------------- Constants and Variables --------------
 """Load options and scores"""
-saveFiles()
+loadFiles()
 
 """Colors"""
 BLACK = (0, 0, 0)
@@ -301,6 +305,8 @@ while True:
         windowSurface.blit(logo, (200, 150))
         
         backButton.doTasks()
+
+        loadFiles()
         
         for i in range (1, 11):
             HighScoreText = smallFont.render(str(i) + '. ' + str(scores[len(scores) - i]), True, YELLOW)
@@ -366,9 +372,9 @@ while True:
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
-                heat = heat + 5
+                heat = heat + distance(1, frameTime)
         if pygame.time.get_ticks() - lastShotTime >= 10:
-            heat = heat - 0.1
+            heat = heat - distance(0.1, frameTime)
 
         if heat <= 0:
             heat = 0
@@ -426,6 +432,7 @@ while True:
             scores = sorted(scores)
 
             saveFiles()
+            print scores
 
         # -------- Debugging --------
         """
