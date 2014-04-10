@@ -53,7 +53,7 @@ def backgroundScrolling():
     background1.render()
     background2.render()
 
-def saveFiles():
+def loadFiles():
     """Set up option file"""
     global options
     options = [1.01]
@@ -64,11 +64,18 @@ def saveFiles():
 
     """Set up high score file"""
     global scores
-    scores = []
+    scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     try:
         scores = pickle.load(open("highscores.dat", "rb"))
     except IOError:
         pickle.dump(scores, open("highscores.dat", "wb"))
+
+def saveFiles():
+    global options
+    pickle.dump(options, open("options.dat", "wb"))
+
+    global scores
+    pickle.dump(scores, open("highscores.dat", "wb"))
 
 def quitgame():
     pygame.quit()
@@ -291,8 +298,13 @@ while True:
 
     """Display 10 highest scores"""
     if GameState == HIGHSCORE:
-        if backButton.doTasks():
-            GameState = GAMEMENU
+        windowSurface.blit(logo, (200, 150))
+        
+        backButton.doTasks()
+        
+        for i in range (1, 11):
+            HighScoreText = smallFont.render(str(i) + '. ' + str(scores[len(scores) - i]), True, YELLOW)
+            windowSurface.blit(HighScoreText, (270, 240 + (30 * i)))
 
     """Options"""
     if GameState == OPTIONS:
@@ -409,6 +421,11 @@ while True:
         if lives <= 0:
             lives = 0
             GameState = GAMEOVER
+            
+            scores.append(score)
+            scores = sorted(scores)
+
+            saveFiles()
 
         # -------- Debugging --------
         """
