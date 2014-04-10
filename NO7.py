@@ -3,8 +3,10 @@ import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
 # -------------- Variables needed in functions --------------
-options = [1.01]
+options = [1.01, True]
 scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+musicOption = options[1]
 
 # -------------- Functions and Classes -------------- 
 
@@ -46,6 +48,8 @@ def changeGameState(newState):
 def distance(speed, time):
     distance = time * speed
     return distance
+
+
 
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
@@ -92,6 +96,17 @@ def music(song):
         pygame.mixer.music.play(-1, 0.0)
         musicStarted = True
 
+def changeMusic():
+    global musicOption
+    musicOption = not musicOption
+    if musicOption == True:
+        pygame.mixer.music.play(-1, 0.0)
+        musicButton.text = "MUSIC:ON"
+    elif musicOption == False:
+        pygame.mixer.music.stop()
+        musicButton.text = "MUSIC:OFF"
+    print musicOption
+
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
         self.position = position
@@ -121,13 +136,13 @@ class Enemy(GameObject):
             pygame.draw.rect(windowSurface, RED, (self.position[0], self.position[1] + 27 * 5, self.health * 1.05, 10))
 
 class Button(object):
-    def __init__(self, position, text, function): #position list [0, 0], list of two images: regular and hovering, boolean
+    def __init__(self, position, text, function):   #position list [0, 0], list of two images: regular and hovering, boolean
         self.position = position
         self.text = text
         self.function = function
         self.image = [pygame.image.load('button.png'), pygame.image.load('buttonH.png')]
         self.hovering = False
-    def doTasks(self): #Render button, check for hovering mouse and check for clicks
+    def doTasks(self):                              #Render button, check for hovering mouse and check for clicks
         global clicked
         if self.hovering == False:
             windowSurface.blit(self.image[0], (self.position[0], self.position[1]))
@@ -222,6 +237,8 @@ retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
 backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 
+musicButton = Button([200, 300], "MUSIC:ON", lambda:changeMusic())
+
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
 background2 = GameObject([0, -900], backgroundImg, None)
@@ -264,6 +281,7 @@ laserSound = pygame.mixer.Sound('shot.wav')
 
 # -------------- Game Loop -------------- 
 while True:
+    
     # -------- Run first outside Gamestate system --------
     """Update loop specific variables"""
     loopTrack = loopTrack + 1
@@ -290,7 +308,9 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
-        music("launchpad")
+        if musicOption == True:
+            music("launchpad")
+        
         
         windowSurface.blit(logo, (200, 150))
         
@@ -314,11 +334,13 @@ while True:
 
     """Options"""
     if GameState == OPTIONS:
+        musicButton.doTasks()
         backButton.doTasks()
 
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
-        music("ToTheMoon")
+        if musicOption == True:
+            music("ToTheMoon")
         # -------- Render Lives --------
         for i in range(0, lives + 1):
             windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
