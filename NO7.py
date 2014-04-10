@@ -251,12 +251,8 @@ animationObjects = []
 
 laserSound = pygame.mixer.Sound('shot.wav')
 
-pygame.mixer.music.load("Launchpad.mp3")
-pygame.mixer.music.play(-1, 0.0)
-
 # -------------- Game Loop -------------- 
 while True:
-    print musicStarted
     # -------- Run first outside Gamestate system --------
     """Update loop specific variables"""
     loopTrack = loopTrack + 1
