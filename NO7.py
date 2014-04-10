@@ -6,8 +6,6 @@ from pygame.locals import *
 options = [1.01, True]
 scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-musicOption = options[1]
-
 # -------------- Functions and Classes -------------- 
 
 def restart():
@@ -64,7 +62,7 @@ def backgroundScrolling():
 def loadFiles():
     """Set up option file"""
     global options
-    options = [1.01]
+    options = [1.01, True]
     try:
         options = pickle.load(open("options.dat", "rb"))
     except IOError:
@@ -97,15 +95,15 @@ def music(song):
         musicStarted = True
 
 def changeMusic():
-    global musicOption
-    musicOption = not musicOption
-    if musicOption == True:
+    options[1] = not options[1]
+    if options[1] == True:
+        pygame.mixer.music.load("launchpad.mp3")
         pygame.mixer.music.play(-1, 0.0)
         musicButton.text = "MUSIC:ON"
-    elif musicOption == False:
+    elif options[1] == False:
         pygame.mixer.music.stop()
         musicButton.text = "MUSIC:OFF"
-    print musicOption
+    return options[1]
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -308,7 +306,7 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
-        if musicOption == True:
+        if options[1] == True:
             music("launchpad")
         
         
@@ -336,10 +334,13 @@ while True:
     if GameState == OPTIONS:
         musicButton.doTasks()
         backButton.doTasks()
-
+        print options
+        saveFiles()
+        loadFiles()
+        
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
-        if musicOption == True:
+        if options[1] == True:
             music("ToTheMoon")
         # -------- Render Lives --------
         for i in range(0, lives + 1):
