@@ -33,7 +33,7 @@ def restart():
     overheat = False
     collidingEnemies = None
     lives = 3
-    difficulty = 15
+    difficulty = 18
     score = 0
     showDebug = False
     clicked = False
@@ -106,14 +106,14 @@ def changeMusic():
     return options[1]
 
 def changeDifficulty():
-    if options[0] == 1.01:
-        options[0] = 1.06
+    if options[0] == 1.005:
+        options[0] = 1.03
         difficultyButton.text = "EASY"
-    elif options[0] == 1.06:
-        options[0] = 1.11
+    elif options[0] == 1.03:
+        options[0] = 1.6
         difficultyButton.text = "MEDIUM"
-    elif options[0] == 1.11:
-        options[0] = 1.01
+    elif options[0] == 1.6:
+        options[0] = 1.005
         difficultyButton.text = "HARD"
     print options[0], difficultyButton.text
 
@@ -284,7 +284,10 @@ explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21
                  pygame.transform.scale(pygame.image.load('explosion3.png'), (21 * 4, 21 * 4)),
                  pygame.transform.scale(pygame.image.load('explosion4.png'), (21 * 4, 21 * 4)),
                  pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * 4, 21 * 4))]
+                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion7.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * 4, 21 * 4)),
+                 pygame.transform.scale(pygame.image.load('explosion9.png'), (21 * 4, 21 * 4))]
 
 animationObjects = []
 
@@ -379,13 +382,13 @@ while True:
 
         # -------- Enemies --------
         """Keep list filled with enemies and check for overlapping enemies"""
-        if difficulty < 7:
-            difficulty = 7
-        if currentTime - lastSpawn >= 100 * difficulty:
+        if difficulty < 10:
+            difficulty = 10
+        if currentTime - lastSpawn >= 1100:
             lastSpawn = pygame.time.get_ticks()
             randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
             randomY = random.randint(-700, -300)
-            enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / 10))
+            enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / difficulty))
             for enemy in enemyList:
                 if enemy.name == loopTrack:
                     continue
@@ -403,6 +406,10 @@ while True:
                 enemyList.remove(enemy)
                 lives = lives - 1
                 difficulty = 10 + (1.6 * lives)
+            if enemy.speed > 0.4:
+                enemy.speed = 0.4
+            if enemy.speed < 0.1:
+                enemy.speed = 0.1
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
             enemy.rect = pygame.Rect(enemy.position[0], enemy.position[1], 21 * 5, 27 * 5)
             enemy.render()
@@ -411,7 +418,8 @@ while True:
         # -------- Shooting Conditions and Overheating -------- 
         if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
             if overheat == False:
-                laserSound.play()
+                if options[1] == True:
+                    laserSound.play()
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
@@ -446,7 +454,7 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
-                    animationObjects.append(Animation(explosionList, 30, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + 11, int(enemy.position[1])]))
+                    animationObjects.append(Animation(explosionList, 50, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + random.randint(0, 21 * 4 - 21), int(enemy.position[1]) + random.randint(0, 27 * 5 - 21)]))
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
