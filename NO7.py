@@ -99,11 +99,22 @@ def changeMusic():
     if options[1] == True:
         pygame.mixer.music.load("launchpad.mp3")
         pygame.mixer.music.play(-1, 0.0)
-        musicButton.text = "MUSIC:ON"
+        musicButton.text = "ON"
     elif options[1] == False:
         pygame.mixer.music.stop()
-        musicButton.text = "MUSIC:OFF"
+        musicButton.text = "OFF"
     return options[1]
+
+def changeDifficulty():
+    if options[0] == 1.01:
+        options[0] = 1.05
+        difficultyButton.text = "EASY"
+    elif options[0] == 1.06:
+        options[0] = 1.11
+        difficultyButton.text = "MEDIUM"
+    elif options[0] = 1.11:
+        options[0] = 1.01
+        difficultyButton.text = "HARD"
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -235,7 +246,8 @@ retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
 backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 
-musicButton = Button([200, 300], "MUSIC:ON", lambda:changeMusic())
+musicButton = Button([200, 300], "ON", lambda:changeMusic())
+difficultyButton = Button([200, 405], "EASY", lambda:changeDifficulty())
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -332,9 +344,16 @@ while True:
 
     """Options"""
     if GameState == OPTIONS:
+        musicText = bigFont.render("MUSIC", True, YELLOW)
+        difficultyText = bigFont.render("DIFFICULTY", True, YELLOW)
+        
+        windowSurface.blit(musicText, (200 - musicText.get_size()[0], 300 + (50 - (musicText.get_size()[1] / 2))))
+        windowSurface.blit(difficultyText, (200 - difficultyText.get_size()[0], 300 + (50 - (difficultyText.get_size()[1] / 2))))
+        
         musicButton.doTasks()
+        difficultyButton.doTasks()
         backButton.doTasks()
-        print options
+
         saveFiles()
         loadFiles()
         
@@ -498,4 +517,3 @@ while True:
     
     """Update display"""
     pygame.display.update()
-
