@@ -420,10 +420,10 @@ while True:
 
         if heat <= 0:
             heat = 0
-            #overheat = False                       #< Cheat mode!
+            overheat = False                       #< Cheat mode!
         elif heat > 100:
             heat = 100
-            #overheat = True                        #< Cheat mode!
+            overheat = True                        #< Cheat mode!
 
         if overheat == False:
             pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
