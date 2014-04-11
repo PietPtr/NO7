@@ -423,7 +423,7 @@ while True:
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
-                heat = heat + distance(1, frameTime)
+                heat = heat + distance(3, frameTime)
         if pygame.time.get_ticks() - lastShotTime >= 10:
             heat = heat - distance(0.1, frameTime)
 
@@ -468,7 +468,7 @@ while True:
         # -------- Debug text -------- 
         if showDebug == True:
             try:
-                debug = enemyList[0].speed
+                debug = frameTime
             except:
                 debug = "Loading"
             debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
@@ -491,6 +491,12 @@ while True:
             pygame.draw.rect(windowSurface, RED, laser.rect)
         for enemy in enemyList:
             pygame.draw.rect(windowSurface, GREEN, enemy.rect)
+        """
+
+        """Simulate slower computers:"""
+        """
+        for i in range(0, 5):
+            print i
         """
 
     """Gameover Screen with try again button"""
