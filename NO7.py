@@ -3,7 +3,7 @@ import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
 # -------------- Variables needed in functions --------------
-options = [1.01, True]
+options = [1.005, True]
 scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 # -------------- Functions and Classes -------------- 
@@ -13,6 +13,7 @@ def restart():
     global laserList
     global enemyList
     global lastShotTime
+    global lastCoolTime
     global lastSpawn
     global loopTrack
     global heat
@@ -27,6 +28,7 @@ def restart():
     laserList = []
     enemyList = []
     lastShotTime = pygame.time.get_ticks()
+    lastCoolTime = pygame.time.get_ticks()
     lastSpawn = pygame.time.get_ticks()
     loopTrack = 0
     heat = 0
@@ -62,7 +64,7 @@ def backgroundScrolling():
 def loadFiles():
     """Set up option file"""
     global options
-    options = [1.01, True]
+    options = [1.005, True]
     try:
         options = pickle.load(open("options.dat", "rb"))
     except IOError:
@@ -110,12 +112,11 @@ def changeDifficulty():
         options[0] = 1.03
         difficultyButton.text = "EASY"
     elif options[0] == 1.03:
-        options[0] = 1.6
+        options[0] = 1.06
         difficultyButton.text = "MEDIUM"
-    elif options[0] == 1.6:
+    elif options[0] == 1.06:
         options[0] = 1.005
         difficultyButton.text = "HARD"
-    print options[0], difficultyButton.text
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -203,7 +204,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-YELLOW = (255, 200, 0)
+YELLOW = (100, 100, 100)
 
 """Constants"""
 WINDOWWIDTH = 600
@@ -250,6 +251,13 @@ backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 musicButton = Button([200, 300], "ON", lambda:changeMusic())
 difficultyButton = Button([200, 405], "EASY", lambda:changeDifficulty())
 
+if options[0] == 1.005:
+    difficultyButton.text = "EASY"
+elif options[0] == 1.03:
+    difficultyButton.text = "MEDIUM"
+elif options[0] == 1.06:
+    difficultyButton.text = "HARD"
+
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
 background2 = GameObject([0, -900], backgroundImg, None)
@@ -286,8 +294,7 @@ explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21
                  pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * 4, 21 * 4)),
                  pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * 4, 21 * 4)),
                  pygame.transform.scale(pygame.image.load('explosion7.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion9.png'), (21 * 4, 21 * 4))]
+                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * 4, 21 * 4)),]
 
 animationObjects = []
 
@@ -300,6 +307,7 @@ while True:
     """Update loop specific variables"""
     loopTrack = loopTrack + 1
     frameTime = mainClock.tick(1000)
+    FPS = mainClock.get_fps()
     currentTime = pygame.time.get_ticks()
     mousePosition = pygame.mouse.get_pos()
     
@@ -423,9 +431,10 @@ while True:
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
-                heat = heat + distance(3, frameTime)
-        if pygame.time.get_ticks() - lastShotTime >= 10:
-            heat = heat - distance(0.1, frameTime)
+                heat = heat + (frameTime * (FPS / 100))
+        if pygame.time.get_ticks() - lastCoolTime >= 10:
+            heat = heat - (frameTime * (FPS / 1000))
+            lastCoolTime = pygame.time.get_ticks()
 
         if heat <= 0:
             heat = 0
@@ -454,7 +463,7 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
-                    animationObjects.append(Animation(explosionList, 50, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + random.randint(0, 21 * 4 - 21), int(enemy.position[1]) + random.randint(0, 27 * 5 - 21)]))
+                    animationObjects.append(Animation(explosionList, 30, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + random.randint(0, 21 * 4 - 21), int(enemy.position[1]) + random.randint(0, 27 * 5 - 21)]))
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
@@ -468,7 +477,7 @@ while True:
         # -------- Debug text -------- 
         if showDebug == True:
             try:
-                debug = frameTime
+                debug = options[0]
             except:
                 debug = "Loading"
             debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
