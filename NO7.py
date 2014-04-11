@@ -107,14 +107,15 @@ def changeMusic():
 
 def changeDifficulty():
     if options[0] == 1.01:
-        options[0] = 1.05
+        options[0] = 1.06
         difficultyButton.text = "EASY"
     elif options[0] == 1.06:
         options[0] = 1.11
         difficultyButton.text = "MEDIUM"
-    elif options[0] = 1.11:
+    elif options[0] == 1.11:
         options[0] = 1.01
         difficultyButton.text = "HARD"
+    print options[0], difficultyButton.text
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -344,11 +345,11 @@ while True:
 
     """Options"""
     if GameState == OPTIONS:
-        musicText = bigFont.render("MUSIC", True, YELLOW)
-        difficultyText = bigFont.render("DIFFICULTY", True, YELLOW)
+        musicText = bigFont.render("MUSIC", False, YELLOW)
+        difficultyText = bigFont.render("DIFFICULTY", False, YELLOW)
         
         windowSurface.blit(musicText, (200 - musicText.get_size()[0], 300 + (50 - (musicText.get_size()[1] / 2))))
-        windowSurface.blit(difficultyText, (200 - difficultyText.get_size()[0], 300 + (50 - (difficultyText.get_size()[1] / 2))))
+        windowSurface.blit(difficultyText, (200 - difficultyText.get_size()[0], 405 + (50 - (difficultyText.get_size()[1] / 2))))
         
         musicButton.doTasks()
         difficultyButton.doTasks()
