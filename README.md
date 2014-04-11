@@ -15,7 +15,7 @@ Double click the .py file to play!
 
 ===
 
-To disable cheat mode (add overheating), remove the '#' at the start of line 271 and 274
+To disable cheat mode (add overheating), remove the '#' at the start of line 423 and 426
 
 ===
 
