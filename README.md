@@ -22,3 +22,11 @@ To disable cheat mode (add overheating), remove the '#' at the start of line 423
 Controls:
 - Space bar/Click to shoot
 - Move the mouse to move
+
+===
+
+CREDITS:
+
+Made by Pietdagamer
+Art by Mark Allen
+Music by Jasdoge (https://soundcloud.com/jasx)
