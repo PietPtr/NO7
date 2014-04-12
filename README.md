@@ -3,7 +3,15 @@ NO7
 
 Python + Pygame
 
-Installation:
+Installation (2 methods):
+
+Method 1:
+
+Download the .zip file containing the images and the program here: https://github.com/Pietdagamer/NO7/archive/master.zip
+
+Extract the .zip file (make sure the images and music is in the same folder as the .exe file) and doubleclick NO7.exe to play!
+
+Method 2:
 
 Download and install python 2.7.6 32bit (Download link: https://www.python.org/ftp/python/2.7.6/python-2.7.6.msi)
 
@@ -11,7 +19,7 @@ Download and install pygame 1.9.1 32bit (Download link: http://pygame.org/ftp/py
 
 Download the .zip file containing the images and the program here: https://github.com/Pietdagamer/NO7/archive/master.zip
 
-Double click the .py file to play!
+Extract the .zip file (make sure the images and music is in the same folder as the .exe file) and doubleclick NO7.py to play!
 
 ===
 
@@ -31,4 +39,4 @@ Made by Pietdagamer
 
 Art by Mark Allen
 
-Music by Jasdoge (https://soundcloud.com/jasx)
+Music by Jasdoge (https://soundbutt.com/jasx)
