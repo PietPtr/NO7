@@ -131,7 +131,7 @@ def quitgame():
 def music(song):
     global musicStarted
     global options
-    if pygame.mixer.music.get_busy() == False and options[1] == True:
+    if musicStarted == False and options[1] == True:
         pygame.mixer.music.load(song + ".mp3")
         pygame.mixer.music.play(-1, 0.0)
         musicStarted = True
@@ -380,8 +380,7 @@ while True:
         
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
-        if options[1] == True:
-            music("ToTheMoon")
+        music("ToTheMoon")
         # -------- Render Lives --------
         for i in range(0, lives + 1):
             windowSurface.blit(lifeImage, (WINDOWWIDTH - 18 * 3 * i, WINDOWHEIGHT - 18 * 3))
@@ -405,7 +404,7 @@ while True:
             lastSpawn = pygame.time.get_ticks()
             randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
             randomY = random.randint(-700, -300)
-            enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.randint(1, 4) / difficulty))
+            enemyList.append(Enemy(loopTrack, 100, [randomX, randomY], enemyStretchedImage, pygame.Rect(randomX, randomY, 21 * 5, 27 * 5), random.choice([4, 5, 6, 7, 10]) / difficulty))
             for enemy in enemyList:
                 if enemy.name == loopTrack:
                     continue
