@@ -31,4 +31,4 @@ Made by Pietdagamer
 
 Art by Mark Allen
 
-Music by Jasdoge (https://soundbutt.com/jasx)
+Music by Jasdoge (https://soundcloud.com/jasx)
