@@ -8,8 +8,6 @@ from __future__ import division
 import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
-# -------------- Variables needed in functions --------------
-
 # -------------- Functions and Classes -------------- 
 
 def restart():
@@ -234,6 +232,8 @@ PLAYERHEIGHT = 27
 SHOOTDELAY = 100
 BULLETSPEED = 1.7
 
+EXPLODERESIZE = 5
+
 """Initiate pygame and set up quick access variable"""
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700,40)
 
@@ -299,15 +299,15 @@ heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
 """Animation lists"""
-explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion1.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion2.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion3.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion4.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion7.png'), (21 * 4, 21 * 4)),
-                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * 4, 21 * 4)),]
+explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion1.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion2.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion3.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion4.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion7.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
+                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),]
 
 animationObjects = []
 
@@ -470,7 +470,8 @@ while True:
                         laserList.remove(laser)
                     except ValueError:
                         pass
-                    animationObjects.append(Animation(explosionList, 30, pygame.time.get_ticks(), 0, [int(enemy.position[0]) + random.randint(0, 21 * 4 - 21), int(enemy.position[1]) + random.randint(0, 27 * 5 - 21)]))
+                    halfexplosion = int(21 * EXPLODERESIZE / 2)
+                    animationObjects.append(Animation(explosionList, 30, pygame.time.get_ticks(), 0, [random.randint(int(enemy.position[0]) - halfexplosion, int(enemy.position[0]) + 21 * 5), int(enemy.position[1]) + random.randint(0, 27 * 5) - halfexplosion]))
                 elif laser.collision(enemy.rect) == False:
                     hasHit = False
             try:
