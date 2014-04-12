@@ -64,7 +64,6 @@ def backgroundScrolling():
 def loadFiles():
     """Set up option file"""
     global options
-    options = [1.005, True]
     try:
         options = pickle.load(open("options.dat", "rb"))
     except IOError:
@@ -74,7 +73,7 @@ def loadFiles():
     global scores
     scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     try:
-        scores = pickle.load(open("highscores.dat", "rb"))
+s        scores = pickle.load(open("highscores.dat", "rb"))
     except IOError:
         pickle.dump(scores, open("highscores.dat", "wb"))
 
@@ -431,7 +430,7 @@ while True:
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
-                heat = heat + (frameTime * (FPS / 100))
+                heat = heat + (frameTime * (FPS / 80))
         if pygame.time.get_ticks() - lastCoolTime >= 10:
             heat = heat - (frameTime * (FPS / 1000))
             lastCoolTime = pygame.time.get_ticks()
@@ -474,14 +473,7 @@ while True:
             except:
                 pass
 
-        # -------- Debug text -------- 
-        if showDebug == True:
-            try:
-                debug = options[0]
-            except:
-                debug = "Loading"
-            debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
-            windowSurface.blit(debugText, (1, 1))
+
 
         # -------- Check Death --------
         if lives <= 0:
@@ -529,6 +521,15 @@ while True:
         quitButton.doTasks()
         if menuButton.doTasks() == True:
             musicStarted = False
+
+    # -------- Debug text -------- 
+    if showDebug == True:
+        try:
+            debug = FPS
+        except:
+            debug = "Loading"
+        debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
+        windowSurface.blit(debugText, (1, 1))
 
     # -------- Run last outside GameState system --------
     """"reset variables"""
