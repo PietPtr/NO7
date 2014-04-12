@@ -3,8 +3,6 @@ import pygame, sys, time, random, os, pickle
 from pygame.locals import *
 
 # -------------- Variables needed in functions --------------
-options = [1.005, True]
-scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 # -------------- Functions and Classes -------------- 
 
@@ -49,7 +47,47 @@ def distance(speed, time):
     distance = time * speed
     return distance
 
+def loadOptions():
+    try:
+        options = pickle.load(open("options.txt", "rb"))
+    except IOError:
+        options = [1.03, False]
+        pickle.dump(options, open("options.txt", "wb"))
+    return options
 
+def saveOptions(options):
+    try:
+        pickle.dump(options, open("options.txt", "wb"))
+        return True
+    except:
+        return False
+
+def loadScores():
+    try:
+        scores = pickle.load(open("highscores.txt", "rb"))
+    except IOError:
+        scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        pickle.dump(scores, open("highscores.txt", "wb"))
+    return scores
+
+def saveScores(scores):
+    try:
+        pickle.dump(scores, open("highscores.txt", "wb"))
+        return True
+    except:
+        return False
+
+def musicText():
+    global options
+    if options[1] == True:
+        return "ON"
+    elif options[1] == False:
+        return "OFF"
+
+def changeMusic():
+    options[1] = not options[1]
+    saveOptions(options)
+    return options
 
 def backgroundScrolling():
     background1.position[1] = background1.position[1] + distance(1, frameTime)
@@ -61,61 +99,19 @@ def backgroundScrolling():
     background1.render()
     background2.render()
 
-def loadFiles():
-    """Set up option file"""
-    global options
-    try:
-        options = pickle.load(open("options.dat", "rb"))
-    except IOError:
-        pickle.dump(options, open("options.dat", "wb"))
-
-    """Set up high score file"""
-    global scores
-    scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    try:
-        scores = pickle.load(open("highscores.dat", "rb"))
-    except IOError:
-        pickle.dump(scores, open("highscores.dat", "wb"))
-
-def saveFiles():
-    global options
-    pickle.dump(options, open("options.dat", "wb"))
-
-    global scores
-    pickle.dump(scores, open("highscores.dat", "wb"))
-
 def quitgame():
     pygame.quit()
     sys.exit()
 
 def music(song):
     global musicStarted
-    if musicStarted == False:
+    global options
+    if pygame.mixer.music.get_busy() == False and options[1] == True:
         pygame.mixer.music.load(song + ".mp3")
         pygame.mixer.music.play(-1, 0.0)
         musicStarted = True
-
-def changeMusic():
-    options[1] = not options[1]
-    if options[1] == True:
-        pygame.mixer.music.load("launchpad.mp3")
-        pygame.mixer.music.play(-1, 0.0)
-        musicButton.text = "ON"
-    elif options[1] == False:
+    if options[1] == False:
         pygame.mixer.music.stop()
-        musicButton.text = "OFF"
-    return options[1]
-
-def changeDifficulty():
-    if options[0] == 1.005:
-        options[0] = 1.03
-        difficultyButton.text = "EASY"
-    elif options[0] == 1.03:
-        options[0] = 1.06
-        difficultyButton.text = "MEDIUM"
-    elif options[0] == 1.06:
-        options[0] = 1.005
-        difficultyButton.text = "HARD"
 
 class GameObject(object):
     def __init__(self, position, image, rect): #self, list, pygame loaded image, pygame rectangle
@@ -194,8 +190,6 @@ class Animation(object):
         return 0
 
 #-------------- Constants and Variables --------------
-"""Load options and scores"""
-loadFiles()
 
 """Colors"""
 BLACK = (0, 0, 0)
@@ -228,6 +222,10 @@ bigFont = pygame.font.SysFont("Impact", 44)
 restart()
 musicStarted = False
 
+options = loadOptions()
+scores = loadScores()
+print scores
+
 """"Game States"""
 GAMEMENU  =  0
 GAMEPLAY  =  1
@@ -246,16 +244,7 @@ quitButton = Button([200, 615], "QUIT", lambda:quitgame())
 retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
 backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
-
-musicButton = Button([200, 300], "ON", lambda:changeMusic())
-difficultyButton = Button([200, 405], "EASY", lambda:changeDifficulty())
-
-if options[0] == 1.005:
-    difficultyButton.text = "EASY"
-elif options[0] == 1.03:
-    difficultyButton.text = "MEDIUM"
-elif options[0] == 1.06:
-    difficultyButton.text = "HARD"
+musicButton = Button([200, 300], musicText(), lambda:changeMusic())
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -329,9 +318,7 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
-        if options[1] == True:
-            music("launchpad")
-        
+        music("launchpad")
         
         windowSurface.blit(logo, (200, 150))
         
@@ -346,8 +333,6 @@ while True:
         windowSurface.blit(logo, (200, 150))
         
         backButton.doTasks()
-
-        loadFiles()
         
         for i in range (1, 11):
             HighScoreText = smallFont.render(str(i) + '. ' + str(scores[len(scores) - i]), True, YELLOW)
@@ -355,18 +340,13 @@ while True:
 
     """Options"""
     if GameState == OPTIONS:
-        musicText = bigFont.render("MUSIC", False, YELLOW)
-        difficultyText = bigFont.render("DIFFICULTY", False, YELLOW)
-        
-        windowSurface.blit(musicText, (200 - musicText.get_size()[0], 300 + (50 - (musicText.get_size()[1] / 2))))
-        windowSurface.blit(difficultyText, (200 - difficultyText.get_size()[0], 405 + (50 - (difficultyText.get_size()[1] / 2))))
-        
-        musicButton.doTasks()
-        difficultyButton.doTasks()
-        backButton.doTasks()
+        music("launchpad")
+        windowSurface.blit(logo, (200, 150))
 
-        saveFiles()
-        loadFiles()
+        musicButton.text = musicText()
+
+        musicButton.doTasks()
+        backButton.doTasks()
         
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
@@ -389,8 +369,8 @@ while True:
 
         # -------- Enemies --------
         """Keep list filled with enemies and check for overlapping enemies"""
-        if difficulty < 10:
-            difficulty = 10
+        if difficulty < 7:
+            difficulty = 7
         if currentTime - lastSpawn >= 1100:
             lastSpawn = pygame.time.get_ticks()
             randomX = random.randint(0, WINDOWWIDTH - 21 * 5)
@@ -407,14 +387,14 @@ while True:
         for enemy in enemyList:
             if enemy.health <= 0:
                 enemyList.remove(enemy)
-                difficulty = difficulty / options[0]
+                difficulty = difficulty / 1.005
                 score = score + 1
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
                 lives = lives - 1
                 difficulty = 10 + (1.6 * lives)
-            if enemy.speed > 0.4:
-                enemy.speed = 0.4
+            if enemy.speed > 0.6:
+                enemy.speed = 0.6
             if enemy.speed < 0.1:
                 enemy.speed = 0.1
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
@@ -425,8 +405,7 @@ while True:
         # -------- Shooting Conditions and Overheating -------- 
         if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
             if overheat == False:
-                if options[1] == True:
-                    laserSound.play()
+                laserSound.play()
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
@@ -472,9 +451,7 @@ while True:
                     laserList.remove(laser)
             except:
                 pass
-
-
-
+            
         # -------- Check Death --------
         if lives <= 0:
             lives = 0
@@ -483,7 +460,7 @@ while True:
             scores.append(score)
             scores = sorted(scores)
 
-            saveFiles()
+            print saveScores(scores)
             print scores
 
         # -------- Debugging --------
