@@ -55,7 +55,7 @@ def loadOptions():
     try:
         options = pickle.load(open("options.txt", "rb"))
     except IOError:
-        options = [1.01, True]
+        options = [1.01, False]
         pickle.dump(options, open("options.txt", "wb"))
     return options
 
@@ -239,6 +239,7 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700,40)
 
 pygame.init()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0)
+pygame.display.set_caption('NO7')
 mainClock = pygame.time.Clock()
 smallFont = pygame.font.SysFont("Impact", 22)
 bigFont = pygame.font.SysFont("Impact", 44)
