@@ -55,7 +55,7 @@ def loadOptions():
     try:
         options = pickle.load(open("options.txt", "rb"))
     except IOError:
-        options = [1.01, False]
+        options = [1.01, True]
         pickle.dump(options, open("options.txt", "wb"))
     return options
 
