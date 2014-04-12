@@ -1,3 +1,9 @@
+"""
+Made by Pietdagamer
+Art by Mark Allen
+Music by Jasdoge (https://soundcloud.com/jasx)
+"""
+
 from __future__ import division
 import pygame, sys, time, random, os, pickle
 from pygame.locals import *
@@ -51,7 +57,7 @@ def loadOptions():
     try:
         options = pickle.load(open("options.txt", "rb"))
     except IOError:
-        options = [1.03, False]
+        options = [1.01, False]
         pickle.dump(options, open("options.txt", "wb"))
     return options
 
@@ -86,6 +92,25 @@ def musicText():
 
 def changeMusic():
     options[1] = not options[1]
+    saveOptions(options)
+    return options
+
+def difficultyText():
+    global options
+    if options[0] == 1.005:
+        return "EASY"
+    elif options[0] == 1.01:
+        return "MEDIUM"
+    elif options[0] == 1.03:
+        return "HARD"
+
+def changeDifficulty():
+    if options[0] == 1.005:
+        options[0] = 1.01
+    elif options[0] == 1.01:
+        options[0] = 1.03
+    elif options[0] == 1.03:
+        options[0] = 1.005
     saveOptions(options)
     return options
 
@@ -224,7 +249,6 @@ musicStarted = False
 
 options = loadOptions()
 scores = loadScores()
-print scores
 
 """"Game States"""
 GAMEMENU  =  0
@@ -245,6 +269,7 @@ retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
 backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 musicButton = Button([200, 300], musicText(), lambda:changeMusic())
+difficultyButton = Button([200, 405], difficultyText(), lambda:changeDifficulty())
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -311,7 +336,6 @@ while True:
             if event.key == 284:
                 showDebug = not showDebug
         if event.type == QUIT:
-            saveFiles()
             quitgame()
 
 
@@ -343,9 +367,15 @@ while True:
         music("launchpad")
         windowSurface.blit(logo, (200, 150))
 
-        musicButton.text = musicText()
+        musicOptionText = bigFont.render("MUSIC", False, YELLOW)
+        difficultyOptionText = bigFont.render("DIFFICULTY", False, YELLOW)
+        windowSurface.blit(musicOptionText, (200 - musicOptionText.get_size()[0], 300 + (50 - (musicOptionText.get_size()[1] / 2))))
+        windowSurface.blit(difficultyOptionText, (200 - difficultyOptionText.get_size()[0], 405 + (50 - (difficultyOptionText.get_size()[1] / 2))))
 
+        musicButton.text = musicText()
         musicButton.doTasks()
+        difficultyButton.text = difficultyText()
+        difficultyButton.doTasks()
         backButton.doTasks()
         
     """Moving, shooting, enemies etc"""
@@ -392,7 +422,6 @@ while True:
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
                 lives = lives - 1
-                difficulty = 10 + (1.6 * lives)
             if enemy.speed > 0.6:
                 enemy.speed = 0.6
             if enemy.speed < 0.1:
@@ -405,7 +434,8 @@ while True:
         # -------- Shooting Conditions and Overheating -------- 
         if currentTime - lastShotTime >= SHOOTDELAY  and (pygame.mouse.get_pressed()[0] == True or pygame.key.get_pressed()[32] == True):
             if overheat == False:
-                laserSound.play()
+                if options[1] == True:
+                    laserSound.play()
                 laserList.append(GameObject([int(playerX) + 4, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
@@ -460,9 +490,7 @@ while True:
             scores.append(score)
             scores = sorted(scores)
 
-            print saveScores(scores)
-            print scores
-
+            saveScores(scores)
         # -------- Debugging --------
         """
         for laser in laserList:
