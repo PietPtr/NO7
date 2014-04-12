@@ -73,7 +73,7 @@ def loadFiles():
     global scores
     scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     try:
-s        scores = pickle.load(open("highscores.dat", "rb"))
+        scores = pickle.load(open("highscores.dat", "rb"))
     except IOError:
         pickle.dump(scores, open("highscores.dat", "wb"))
 
