@@ -343,6 +343,7 @@ while True:
     # -------- Game state specific --------
     """Menu with a start button"""
     if GameState == GAMEMENU:
+        pygame.mouse.set_visible(True)
         music("launchpad")
         
         windowSurface.blit(logo, (200, 150))
@@ -355,6 +356,7 @@ while True:
 
     """Display 10 highest scores"""
     if GameState == HIGHSCORE:
+        pygame.mouse.set_visible(True)
         windowSurface.blit(logo, (200, 150))
         
         backButton.doTasks()
@@ -365,6 +367,7 @@ while True:
 
     """Options"""
     if GameState == OPTIONS:
+        pygame.mouse.set_visible(True)
         music("launchpad")
         windowSurface.blit(logo, (200, 150))
 
@@ -381,6 +384,7 @@ while True:
         
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
+        pygame.mouse.set_visible(False)
         music("ToTheMoon")
         # -------- Render Lives --------
         for i in range(0, lives + 1):
@@ -508,6 +512,7 @@ while True:
 
     """Gameover Screen with try again button"""
     if GameState == GAMEOVER:
+        pygame.mouse.set_visible(True)
         # -------- Enemies finish their track --------
         for enemy in enemyList:
             enemy.position[1] = enemy.position[1] + distance(enemy.speed, frameTime)
