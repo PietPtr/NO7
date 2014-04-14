@@ -178,7 +178,7 @@ class Button(object):
         elif self.hovering == True:
             windowSurface.blit(self.image[1], (self.position[0], self.position[1]))
         
-        buttonText = bigFont.render(str(self.text), False, YELLOW)
+        buttonText = bigFont.render(str(self.text), False, GRAY)
         buttonTextSize = buttonText.get_size()
         windowSurface.blit(buttonText, (self.position[0] + (100 - (buttonTextSize[0] / 2)), self.position[1] + (50 - (buttonTextSize[1] / 2))))
 
@@ -220,7 +220,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-YELLOW = (100, 100, 100)
+GRAY = (75, 75, 75)
 
 """Constants"""
 WINDOWWIDTH = 600
@@ -362,7 +362,7 @@ while True:
         backButton.doTasks()
         
         for i in range (1, 11):
-            HighScoreText = smallFont.render(str(i) + '. ' + str(scores[len(scores) - i]), True, YELLOW)
+            HighScoreText = smallFont.render(str(i) + '. ' + str(scores[len(scores) - i]), True, GRAY)
             windowSurface.blit(HighScoreText, (270, 240 + (30 * i)))
 
     """Options"""
@@ -371,8 +371,8 @@ while True:
         music("launchpad")
         windowSurface.blit(logo, (200, 150))
 
-        musicOptionText = bigFont.render("MUSIC", False, YELLOW)
-        difficultyOptionText = bigFont.render("DIFFICULTY", False, YELLOW)
+        musicOptionText = bigFont.render("MUSIC", False, GRAY)
+        difficultyOptionText = bigFont.render("DIFFICULTY", False, GRAY)
         windowSurface.blit(musicOptionText, (200 - musicOptionText.get_size()[0], 300 + (50 - (musicOptionText.get_size()[1] / 2))))
         windowSurface.blit(difficultyOptionText, (200 - difficultyOptionText.get_size()[0], 405 + (50 - (difficultyOptionText.get_size()[1] / 2))))
 
@@ -523,7 +523,7 @@ while True:
         # -------- Blitting GameOver images etc --------
         windowSurface.blit(gameOverIMG, (WINDOWWIDTH / 2 - 100, 200))
 
-        scoreText = bigFont.render("Score: " + str(score), False, YELLOW)
+        scoreText = bigFont.render("Score: " + str(score), False, GRAY)
         scoreTextSize = scoreText.get_size()
         windowSurface.blit(scoreText, ((WINDOWWIDTH / 2) - (scoreTextSize[0] / 2), 350))
 
@@ -539,7 +539,7 @@ while True:
             debug = FPS
         except:
             debug = "Loading"
-        debugText = smallFont.render(str(debug), False, YELLOW) #text | antialiasing | color
+        debugText = smallFont.render(str(debug), False, GRAY) #text | antialiasing | color
         windowSurface.blit(debugText, (1, 1))
 
     # -------- Run last outside GameState system --------
