@@ -1,18 +1,6 @@
 """
 Made by Pietdagamer
 Music by Jasdoge
-
-V = d / t
-t = d / V
-d = t * V
-
-V constant
-t varies per PC
-d Calculate every loop, render objects according to this variable
-
-- Never Sleep
-- speed is distance over time
-
 """
 
 import pygame, sys, time, random, os, pickle
