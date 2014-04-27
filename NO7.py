@@ -81,6 +81,21 @@ def saveScores(scores):
     except:
         return False
 
+def loadStats():
+    try:
+        stats = pickle.load(open("stats.txt", "rb"))
+    except IOError:
+        stats = [0, 0, 0, 0] #0: Shots fired, 1: Games played, 2: Enemies killed, 3: Distance travelled
+        pickle.dump(stats, open("stats.txt", "wb"))
+    return stats
+
+def saveStats(stats):
+    try:
+        pickle.dump(scores, open("stats.txt", "wb"))
+        return True
+    except:
+        return False
+
 def musicText():
     global options
     if options[1] == True:
@@ -257,6 +272,7 @@ GAMEPLAY  =  1
 GAMEOVER  =  2
 OPTIONS   =  3
 HIGHSCORE =  4
+STATS     =  5
 GameState =  GAMEMENU
 
 """Objects"""
@@ -271,6 +287,8 @@ retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
 musicButton = Button([200, 300], musicText(), lambda:changeMusic())
 difficultyButton = Button([200, 405], difficultyText(), lambda:changeDifficulty())
+
+statsButton = Button([200, 720], "OTHER STATS", lambda:changeGameState(STATS))
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
