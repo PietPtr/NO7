@@ -85,13 +85,13 @@ def loadStats():
     try:
         stats = pickle.load(open("stats.txt", "rb"))
     except IOError:
-        stats = [0, 0, 0, 0] #0: Shots fired, 1: Games played, 2: Enemies killed, 3: Distance travelled
+        stats = [0, 0, 0, 0, 0] #0: Shots fired, 1: Games played, 2: Enemies killed, 3: Distance travelled, 4: Overheats
         pickle.dump(stats, open("stats.txt", "wb"))
     return stats
 
 def saveStats(stats):
     try:
-        pickle.dump(scores, open("stats.txt", "wb"))
+        pickle.dump(stats, open("stats.txt", "wb"))
         return True
     except:
         return False
@@ -128,6 +128,8 @@ def changeDifficulty():
     return options
 
 def backgroundScrolling():
+    global stats
+    global GameState
     background1.position[1] = background1.position[1] + distance(1, frameTime)
     background2.position[1] = background2.position[1] + distance(1, frameTime)
     if background1.position[1] > 900:
@@ -136,6 +138,8 @@ def backgroundScrolling():
     
     background1.render()
     background2.render()
+    if GameState == 1:
+        stats[3] = stats[3] + distance(1, frameTime)
 
 def quitgame():
     pygame.quit()
@@ -265,6 +269,7 @@ musicStarted = False
 
 options = loadOptions()
 scores = loadScores()
+stats = loadStats()
 
 """"Game States"""
 GAMEMENU  =  0
@@ -281,14 +286,14 @@ optionButton = Button([200, 405], "OPTIONS", lambda:changeGameState(OPTIONS))
 highScoreButton = Button([200, 510], "TOPSCORE", lambda:changeGameState(HIGHSCORE))
 
 menuButton = Button([200, 510], "MENU", lambda:changeGameState(GAMEMENU))
-quitButton = Button([200, 615], "QUIT", lambda:quitgame())
+quitButton = Button([200, 720], "QUIT", lambda:quitgame())
 retryButton = Button([200, 405], "RETRY", lambda:changeGameState(GAMEPLAY))
 
-backButton = Button([200, 615], "BACK", lambda:changeGameState(GAMEMENU))
+backButton = Button([200, 720], "BACK", lambda:changeGameState(GAMEMENU))
 musicButton = Button([200, 300], musicText(), lambda:changeMusic())
 difficultyButton = Button([200, 405], difficultyText(), lambda:changeDifficulty())
 
-statsButton = Button([200, 720], "OTHER STATS", lambda:changeGameState(STATS))
+statsButton = Button([200, 615], "STATS", lambda:changeGameState(STATS))
 
 backgroundImg = pygame.image.load('background.png')
 background1 = GameObject([0, 0], backgroundImg, None)
@@ -371,6 +376,7 @@ while True:
             musicStarted = False
         optionButton.doTasks()
         highScoreButton.doTasks()
+        statsButton.doTasks()
 
     """Display 10 highest scores"""
     if GameState == HIGHSCORE:
@@ -399,7 +405,26 @@ while True:
         difficultyButton.text = difficultyText()
         difficultyButton.doTasks()
         backButton.doTasks()
-        
+
+    """Stats"""
+    if GameState == STATS:
+        pygame.mouse.set_visible(True)
+        windowSurface.blit(logo, (200, 150))
+
+        backButton.doTasks()
+
+        shotsFiredText = smallFont.render("Lasers fired: " + str(stats[0]), True, GRAY)
+        gamesPlayedText = smallFont.render("Games played: " + str(stats[1]), True, GRAY)
+        enemiesKilledText = smallFont.render("Enemies killed: " + str(stats[2]), True, GRAY)
+        distanceTravelledText = smallFont.render("Distance travelled:" + str(stats[3]) + " meter", True, GRAY)
+        overheatsText = smallFont.render("Overheats: " + str(stats[4]), True, GRAY)
+
+        windowSurface.blit(shotsFiredText, (300 - (shotsFiredText.get_size()[0] / 2), 300 + gamesPlayedText.get_size()[1] * 0 + 5))
+        windowSurface.blit(gamesPlayedText, (300 - (gamesPlayedText.get_size()[0] / 2), 300 + gamesPlayedText.get_size()[1] * 1 + 5))
+        windowSurface.blit(enemiesKilledText, (300 - (enemiesKilledText.get_size()[0] / 2), 300 + gamesPlayedText.get_size()[1] * 2 + 5))
+        windowSurface.blit(distanceTravelledText, (300 - (distanceTravelledText.get_size()[0] / 2), 300 + distanceTravelledText.get_size()[1] * 3 + 5))
+        windowSurface.blit(overheatsText, (300 - (overheatsText.get_size()[0] / 2), 300 + overheatsText.get_size()[1] * 4 + 5))
+    
     """Moving, shooting, enemies etc"""
     if GameState == GAMEPLAY:
         pygame.mouse.set_visible(False)
@@ -441,6 +466,7 @@ while True:
                 enemyList.remove(enemy)
                 difficulty = difficulty / 1.005
                 score = score + 1
+                stats[2] = stats[2] + 1
             if enemy.position[1] > 910:
                 enemyList.remove(enemy)
                 lives = lives - 1
@@ -462,6 +488,7 @@ while True:
                 laserList.append(GameObject([int(playerX) + PLAYERWIDTH * 4 - 8, 826], laserStretchedImage, pygame.Rect(int(playerX), 826, 4, 3 * 4)))
                 lastShotTime = pygame.time.get_ticks()
                 heat = heat + (frameTime * (FPS / 80))
+                stats[0] = stats[0] + 1
         if pygame.time.get_ticks() - lastCoolTime >= 10:
             heat = heat - (frameTime * (FPS / 1000))
             lastCoolTime = pygame.time.get_ticks()
@@ -472,6 +499,7 @@ while True:
         elif heat > 100:
             heat = 100
             overheat = True                        #< Cheat mode!
+            stats[4] = stats[4] + 1
 
         if overheat == False:
             pygame.draw.rect(windowSurface, (heat * 2.55, (100 - heat) * 2.55, 0), (playerX, 880, heat * 0.84, 10))
@@ -509,11 +537,13 @@ while True:
         if lives <= 0:
             lives = 0
             GameState = GAMEOVER
+            stats[1] = stats[1] + 1
             
             scores.append(score)
             scores = sorted(scores)
 
             saveScores(scores)
+            saveStats(stats)
         # -------- Debugging --------
         """
         for laser in laserList:
