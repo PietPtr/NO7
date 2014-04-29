@@ -266,6 +266,7 @@ bigFont = pygame.font.SysFont("Impact", 44)
 """Other variables"""
 restart()
 musicStarted = False
+screenshot = False
 
 options = loadOptions()
 scores = loadScores()
@@ -323,15 +324,10 @@ heatSurface = pygame.Surface((600, 900))
 heatSurface.fill((255, 0, 0))
 
 """Animation lists"""
-explosionList = [pygame.transform.scale(pygame.image.load('explosion0.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion1.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion2.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion3.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion4.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion5.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion6.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion7.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),
-                 pygame.transform.scale(pygame.image.load('explosion8.png'), (21 * EXPLODERESIZE, 21 * EXPLODERESIZE)),]
+explosionList = []
+
+for i in range(0, 9):
+    explosionList.append(pygame.transform.scale(pygame.image.load('explosion' + str(i) + '.png'), (int(21 * EXPLODERESIZE), int(21 * EXPLODERESIZE))))
 
 animationObjects = []
 
@@ -359,6 +355,8 @@ while True:
         if event.type == KEYUP:
             if event.key == 284:
                 showDebug = not showDebug
+            elif event.key == 283:
+                screenshot = True
         if event.type == QUIT:
             quitgame()
 
@@ -416,7 +414,7 @@ while True:
         shotsFiredText = smallFont.render("Lasers fired: " + str(stats[0]), True, GRAY)
         gamesPlayedText = smallFont.render("Games played: " + str(stats[1]), True, GRAY)
         enemiesKilledText = smallFont.render("Enemies killed: " + str(stats[2]), True, GRAY)
-        distanceTravelledText = smallFont.render("Distance travelled:" + str(stats[3]) + " meter", True, GRAY)
+        distanceTravelledText = smallFont.render("Distance travelled:" + str(stats[3]) + " pixels", True, GRAY)
         overheatsText = smallFont.render("Overheats: " + str(stats[4]), True, GRAY)
 
         windowSurface.blit(shotsFiredText, (300 - (shotsFiredText.get_size()[0] / 2), 300 + gamesPlayedText.get_size()[1] * 0 + 5))
@@ -598,6 +596,17 @@ while True:
     for animation in animationObjects:
         if animation.render() == 1:
             animationObjects.remove(animation)
+
+    """Screenshot"""
+    if screenshot == True:
+        screenshot = False
+        for x in range(0, 53835):
+            if os.path.exists("screenshot" + str(x) + ".png") == True:
+                next
+            elif os.path.exists("screenshot" + str(x) + ".png") == False:
+                pygame.image.save(windowSurface, "screenshot" + str(x) + ".png")
+                break
+            
     
     """Update display"""
     pygame.display.update()
