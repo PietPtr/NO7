@@ -1,5 +1,5 @@
 """
-Made by Pietdagamer
+Made by Pieter S
 Art by Mark Allen
 Music by Jasdoge (https://soundcloud.com/jasx)
 """
